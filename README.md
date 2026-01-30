@@ -10,6 +10,7 @@ For CSE 0613-308 | Software Development Management Lab
 - Python
 - Django
 - SQLite
+- Docker
 
 # Features
 
@@ -27,10 +28,30 @@ For CSE 0613-308 | Software Development Management Lab
   ```bash
   cd tadpole-interactive-story-engine
   ```
-  
+
+### 🐳 Quick Start with Docker (Recommended)
+
+The easiest way to run the application:
+
+1. Build the Docker image
+```bash
+docker build -t tadpole-story-engine .
+```
+
+2. Run the container
+```bash
+docker run -p 8000:8000 tadpole-story-engine
+```
+
+3. Open http://localhost:8000/api/start/
+
+
+
+### Manual Setup (Alternative)
+
 - Create a virtual environment:
   ```bash
-  python -m venv venv
+  python -m venv .venv
   ```
 
 - Activate the virtual environment:
@@ -46,6 +67,12 @@ For CSE 0613-308 | Software Development Management Lab
 - Install the required dependencies:
   ```bash
   pip install -r requirements.txt
+  ```
+
+- Create environment file:
+  ```bash
+  cp .env.example .env
+  # Edit .env with your settings
   ```
 
 - Apply database migrations:
