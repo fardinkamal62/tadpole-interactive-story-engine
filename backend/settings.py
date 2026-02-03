@@ -1,22 +1,28 @@
 from pathlib import Path
 import environ
+import os
 
+# -------------------------
+# ENVIRONMENT SETUP
+# -------------------------
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env()  # reads .env file from BASE_DIR
 
+# -------------------------
+# BASE DIR
+# -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
-
+# -------------------------
+# SECURITY
+# -------------------------
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-9xk2@something-random-and-long')
+DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
-
-# Application definition
-
+# -------------------------
+# APPS
+# -------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,6 +32,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+# -------------------------
+# MIDDLEWARE
+# -------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -36,6 +45,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# -------------------------
+# URLS & TEMPLATES
+# -------------------------
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -55,10 +67,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# -------------------------
+# DATABASE
+# -------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -66,39 +77,33 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
+# -------------------------
+# PASSWORD VALIDATION
+# -------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
+# -------------------------
+# INTERNATIONALIZATION
+# -------------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# -------------------------
+# STATIC FILES
+# -------------------------
+STATIC_URL = '/static/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
+# Extra static folders (your own static files)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # make sure this folder exists, otherwise remove it
+]
 
-STATIC_URL = 'static/'
+# Where collectstatic will copy all static files
+STATIC_ROOT = BASE_DIR / "staticfiles"  # ⚡ MUST exist after collectstatic
