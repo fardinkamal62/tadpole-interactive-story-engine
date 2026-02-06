@@ -16,6 +16,7 @@ class Scene(models.Model):
     background_image = models.URLField(blank=True, null=True)
     trust_level = models.IntegerField(default=0)
     is_ending = models.BooleanField(default=False)
+    is_starting = models.BooleanField(default=False)
     
 
 class Choice(models.Model):

@@ -67,7 +67,16 @@ class ChoiceView(APIView):
         
 
         new_trust_level = scene.trust_level + choice.trust_level_change
-        get_scene = Scene.objects.filter(trust_level__gte=new_trust_level).first()
+
+        if new_trust_level < 0 and scene.is_starting:
+            new_trust_level = 0 + choice.trust_level_change
+
+        print("New Trust Level:", new_trust_level)
+
+        get_scene = Scene.objects.filter(trust_level=new_trust_level).first()
+        
+        if not get_scene:
+            return Response({"error": "No scene found for this trust level"}, status=status.HTTP_404_NOT_FOUND)
         serializer = SceneSerializer(get_scene)
 
         if get_scene.is_ending:
