@@ -6,23 +6,20 @@ import os
 # ENVIRONMENT SETUP
 # -------------------------
 env = environ.Env()
-environ.Env.read_env()  # reads .env file from BASE_DIR
 
 # -------------------------
 # BASE DIR
 # -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(BASE_DIR / '.env')
 
-# -------------------------
-# SECURITY
-# -------------------------
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-9xk2@something-random-and-long')
-DEBUG = env.bool('DEBUG', default=True)
+SECRET_KEY = env('SECRET_KEY')
+
+DEBUG = env.bool('DEBUG', default=False)
+
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
-# -------------------------
-# APPS
-# -------------------------
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -101,16 +98,11 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
-# -------------------------
-# STATIC FILES
-# -------------------------
 STATIC_URL = '/static/'
 
 # Extra static folders (your own static files)
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # make sure this folder exists, otherwise remove it
+    BASE_DIR / "static", 
 ]
 
-# Where collectstatic will copy all static files
-STATIC_ROOT = BASE_DIR / "staticfiles"  # ⚡ MUST exist after collectstatic
+STATIC_ROOT = BASE_DIR / "staticfiles"  
