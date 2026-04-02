@@ -172,7 +172,7 @@ $(function () {
         });
     }
 
-    // ── Upload ────────────────────────────────────────────────────────────
+    // Upload handlers
     const $dropZone   = $('#drop-zone');
     const $fileInput  = $('#file-input');
     const $uploadList = $('#upload-list');
@@ -206,7 +206,7 @@ $(function () {
         const $row    = $('<div>').addClass('upload-item');
         const $icon   = $('<i>').addClass('fa-solid fa-file-arrow-up text-muted');
         const $label  = $('<span>').addClass('upload-name').text(name);
-        const $status = $('<span>').addClass('upload-status text-muted').text('Uploading…');
+        const $status = $('<span>').addClass('upload-status text-muted').text('Uploading...');
         $row.append($icon, $label, $status);
         $uploadList.prepend($row);
         return { $row, $icon, $status };
@@ -258,7 +258,6 @@ $(function () {
             });
         }
     }
-    // ─────────────────────────────────────────────────────────────────────
 
     // Hide autosuggestions when clicking outside
     $(document).on('click', function(e) {
@@ -268,3 +267,4 @@ $(function () {
         }
     });
 });
+
