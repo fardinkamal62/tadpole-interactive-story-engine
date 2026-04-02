@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tadpole - Interactive Story Engine</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}?v={{ timestamp }}">
+</head>
+
+<body>
+<div class="page-shell">
+    <header class="topbar container py-4 d-flex justify-content-between align-items-center">
+        <div>
+            <div class="brand-mark">Tadpole</div>
+            <div class="brand-subtitle">Interactive Story Engine</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-light" href="/login/">Log in</a>
+            <a class="btn btn-primary" href="/api/start/">Try demo</a>
+        </div>
+    </header>
+
+    <main class="container py-5">
+        <section class="hero-card row g-4 align-items-center">
+            <div class="col-lg-7">
+                <span class="pill-badge">Branching stories • Choices • Endings</span>
+                <h1 class="display-5 fw-bold mt-3 mb-3">Build and play interactive stories in one place.</h1>
+                <p class="lead text-light-emphasis mb-4">
+                    Tadpole helps writers create scene-based stories, connect choices, and shape outcomes with
+                    simple branching logic.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="btn btn-primary btn-lg" href="/login/">Open dashboard</a>
+                    <a class="btn btn-outline-light btn-lg" href="/api/start/">View story demo</a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="stats-card">
+                    <div class="stat-item">
+                        <span class="stat-label">Runtime</span>
+                        <strong>Session-based story play</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Creator tools</span>
+                        <strong>Stories, scenes, choices</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Backend</span>
+                        <strong>Django + PostgreSQL + DRF</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-4 mt-4">
+            <div class="col-md-4">
+                <article class="feature-card h-100">
+                    <h5>Branching story flow</h5>
+                    <p>
+                        Create scenes, connect choices, and guide players through different paths and endings.
+                    </p>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="feature-card h-100">
+                    <h5>Choice-driven play</h5>
+                    <p>
+                        Track variables like trust and security while the player moves through the story.
+                    </p>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="feature-card h-100">
+                    <h5>Creator-ready foundation</h5>
+                    <p>
+                        The project already includes REST APIs, admin access, and a clear path for editor tools.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section class="roadmap-card mt-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-8">
+                    <h4 class="mb-2">What is already in the codebase</h4>
+                    <p class="mb-0 text-light-emphasis">
+                        A story runtime, a database-backed game API, authentication, and Django admin support.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a class="btn btn-light" href="/admin/">Open admin</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

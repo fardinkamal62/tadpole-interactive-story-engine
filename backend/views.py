@@ -1,7 +1,10 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from django.shortcuts import render
 import json
+import time
+
 from .story_logic import StoryState, Scene, Choice
 
 # A simple sample story
@@ -12,7 +15,7 @@ STORY_DATA = {
             scene_id=0,
             background="/static/house_entrance.jpg",
             choices=[
-                Choice(1, "Enter the house", 1, 
+                Choice(1, "Enter the house", 1,
                       effects={}),
                 Choice(2, "Don't enter, go to the barn", 3,
                       effects={})
@@ -84,7 +87,7 @@ def start_story(request):
     """Initialize a new story session and return the first scene"""
     initial_state = StoryState(story_id=0, current_scene_id=0)
     request.session['game_state'] = initial_state.__dict__
-    
+
     current_scene = STORY_DATA["scenes"][initial_state.current_scene_id]
     return build_scene_response(request, current_scene, initial_state.variables)
 
@@ -93,14 +96,14 @@ def process_choice(request):
     """POST endpoint - processes player choice and returns next scene"""
     if request.method != 'POST':
         return JsonResponse({"error": "POST required"}, status=405)
-    
+
     # Get current state from session
     state_dict = request.session.get('game_state')
     if not state_dict:
         return JsonResponse({"error": "No active game session"}, status=400)
-    
+
     state = StoryState(**state_dict)
-    
+
     # Get choice data from request
     try:
         data = json.loads(request.body)
@@ -108,16 +111,16 @@ def process_choice(request):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
     choice_id = data.get('choice_id')
     current_scene_id = data.get('current_scene_id')
-    
+
     # Validate choice exists in current scene
     current_scene = STORY_DATA["scenes"].get(current_scene_id)
     if not current_scene:
         return JsonResponse({"error": "Invalid scene"}, status=400)
-    
+
     selected_choice = next((c for c in current_scene.choices if c.id == choice_id), None)
     if not selected_choice:
         return JsonResponse({"error": "Invalid choice"}, status=400)
-    
+
     # Apply effects to variables
     if len(selected_choice.effects) > 0:
         for var_name, value in selected_choice.effects.items():
@@ -137,7 +140,7 @@ def process_choice(request):
             "final_variables": state.variables,
             "path": state.visited_scenes
         })
-    
+
     return build_scene_response(request, next_scene, state.variables)
 
 # Helper functions
@@ -186,3 +189,23 @@ def check_conditions(conditions, variables):
 def has_conditional_flow(choices):
     """Check if scene has conditional flow pattern (conditional choice followed by fallback)"""
     return len(choices) >= 2 and choices[0].conditions and not choices[-1].conditions
+
+def home_page(request):
+    """Simple home page view"""
+    context = {'timestamp': int(time.time())}
+    response = render(request, 'home_page.html', context)
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
+
+
+def login_page(request):
+    """Render the login page"""
+    context = {'timestamp': int(time.time())}
+    response = render(request, 'login_page.html', context)
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
+
