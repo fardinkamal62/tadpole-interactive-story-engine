@@ -8,7 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'styles/index.css' %}?v={{ timestamp }}">
+    <link rel="stylesheet" href="{% static 'styles/home_page.css' %}?v={{ timestamp }}">
 </head>
 
 <body>
@@ -18,8 +18,18 @@
             <div class="brand-mark">Tadpole</div>
             <div class="brand-subtitle">Interactive Story Engine</div>
         </div>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-light" href="/login/">Log in</a>
+        <div class="d-flex gap-2 align-items-center">
+            <a class="btn btn-outline-primary" href="/login/" id="home-login-btn">Log in</a>
+            <div class="profile-menu d-none" id="home-profile-menu">
+                <button type="button" class="user-chip" id="home-user-chip" aria-label="Signed-in user menu">
+                    <span class="user-avatar" id="home-user-avatar">U</span>
+                    <span class="user-name" id="home-user-name"></span>
+                </button>
+                <div class="profile-dropdown" aria-label="Profile menu">
+                    <a class="profile-dropdown-item" href="/" id="home-profile-dashboard-link">Dashboard</a>
+                    <button type="button" class="profile-dropdown-item" id="home-profile-logout-btn">Logout</button>
+                </div>
+            </div>
             <a class="btn btn-primary" href="/api/start/">Try demo</a>
         </div>
     </header>
@@ -34,8 +44,8 @@
                     simple branching logic.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a class="btn btn-primary btn-lg" href="/login/">Open dashboard</a>
-                    <a class="btn btn-outline-light btn-lg" href="/api/start/">View story demo</a>
+                    <a class="btn btn-primary btn-lg" href="/login/" id="home-dashboard-btn">Open dashboard</a>
+                    <a class="btn btn-outline-primary btn-lg" href="/api/start/">View story demo</a>
                 </div>
             </div>
             <div class="col-lg-5">
@@ -77,26 +87,13 @@
                 <article class="feature-card h-100">
                     <h5>Creator-ready foundation</h5>
                     <p>
-                        The project already includes REST APIs, admin access, and a clear path for editor tools.
+                        The project already includes REST APIs and a clear path for editor tools.
                     </p>
                 </article>
             </div>
         </section>
-
-        <section class="roadmap-card mt-4">
-            <div class="row g-3 align-items-center">
-                <div class="col-lg-8">
-                    <h4 class="mb-2">What is already in the codebase</h4>
-                    <p class="mb-0 text-light-emphasis">
-                        A story runtime, a database-backed game API, authentication, and Django admin support.
-                    </p>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a class="btn btn-light" href="/admin/">Open admin</a>
-                </div>
-            </div>
-        </section>
     </main>
 </div>
+<script src="{% static 'scripts/home_page.js' %}?v={{ timestamp }}" defer></script>
 </body>
 </html>

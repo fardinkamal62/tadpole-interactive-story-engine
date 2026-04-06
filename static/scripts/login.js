@@ -1,8 +1,3 @@
-// Redirect to home if already logged in
-if (localStorage.getItem('auth_token')) {
-    window.location.replace('/');
-}
-
 const $form     = $('#login-form');
 const $username = $('#username');
 const $password = $('#password');
@@ -51,9 +46,25 @@ if (localStorage.getItem('auth_token')) {
 }
 
 $('#logout-btn').on('click', function () {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    window.location.reload();
+    const token = localStorage.getItem('auth_token');
+
+    const finalizeLogout = function () {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+        window.location.reload();
+    };
+
+    if (!token) {
+        finalizeLogout();
+        return;
+    }
+
+    fetch('/api/auth/logout/', {
+        method: 'POST',
+        headers: {
+            Authorization: `Token ${token}`,
+        },
+    }).finally(finalizeLogout);
 });
 
 $form.on('submit', async function (e) {
