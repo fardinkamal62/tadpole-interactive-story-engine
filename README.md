@@ -1,5 +1,5 @@
 # Tadpole Interactive Story Engine
-<sub>Version 1.2.0-Alpha</sub>
+<sub>Version 1.2.1-Alpha</sub>
 
 A web-based visual novel engine that enables non-programmers to design and publish branching, choice-driven interactive stories through a graphical interface.
 
