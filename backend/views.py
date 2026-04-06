@@ -1,11 +1,12 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import json
 import time
 
 from .story_logic import StoryState, Scene, Choice
+from apps.story.models import Story as StoryModel
 
 # A simple sample story
 STORY_DATA = {
@@ -207,5 +208,30 @@ def login_page(request):
     response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
+    return response
+
+
+def story_list_page(request):
+    """Render the list of available stories."""
+    stories = StoryModel.objects.all().order_by("title")
+    context = {
+        "timestamp": int(time.time()),
+        "stories": stories,
+    }
+    response = render(request, "story_list.html", context)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
+
+
+def story_play_page(request, story_id):
+    """Render the story play page for a specific story."""
+    get_object_or_404(StoryModel, pk=story_id)
+    context = {"timestamp": int(time.time())}
+    response = render(request, "story_page.html", context)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
     return response
 

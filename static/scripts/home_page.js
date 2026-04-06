@@ -18,8 +18,8 @@
 
     loginBtn.classList.add('d-none');
     profileMenu.classList.remove('d-none');
-    dashboardBtn.setAttribute('href', '/');
-    profileDashboardLink.setAttribute('href', '/');
+    dashboardBtn.setAttribute('href', '/story/');
+    profileDashboardLink.setAttribute('href', '/story/');
 
     logoutBtn.addEventListener('click', async function () {
         try {
@@ -50,4 +50,3 @@
     userNameEl.textContent = username;
     userAvatarEl.textContent = username.charAt(0).toUpperCase();
 })();
-

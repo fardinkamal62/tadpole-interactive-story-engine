@@ -43,7 +43,7 @@ Implemented in `game/admin.py`.
 Implemented mainly under `tests/`.
 
 - `tests/test_story_logic.py`: unit tests for `StoryState`, `Scene`, `Choice`
-- `tests/test_views.py`: integration tests for session-based endpoints (`/api/start/`, `/api/choice/`) and helper logic (`check_conditions`, `has_conditional_flow`, `get_available_choices`)
+- `tests/test_views.py`: integration tests for story API endpoints (`/story/api/start/`, `/story/api/choice/`) and helper logic
 
 ## 3) Module Map
 
@@ -54,9 +54,9 @@ Implemented mainly under `tests/`.
 - `backend/urls.py`
   - Root router:
     - `/admin/`
-    - `/api/start/`
-    - `/api/choice/`
-    - `/game/` (includes `game.urls`)
+    - `/story/` (story list)
+    - `/story/<id>/` (story play)
+    - `/story/api/` (includes `apps.story.urls`)
 - `backend/story_logic.py`
   - Plain Python domain classes used by the session API:
     - `StoryState(story_id, current_scene_id, variables={}, visited_scenes=[])`
@@ -133,13 +133,13 @@ Base URL examples below assume local server at `http://localhost:8000`.
 
 ---
 
-### 5.1 Session Story API (`backend/views.py`)
+### 5.1 Story API (`apps/story/views.py`)
 
-#### `GET /api/start/`
+#### `GET /story/api/start/`
 Starts a new in-session game state.
 
 - Method: `GET`
-- Body params: none
+- Query params: `story_id` (required)
 - Side effects:
   - creates/overwrites `request.session['game_state']`
   - sets CSRF cookie (`csrftoken`)
@@ -150,19 +150,30 @@ Example response shape:
 ```json
 {
   "csrf_token": "<token>",
+  "story": {
+    "id": 1,
+    "title": "The Lantern Trail",
+    "description": "A rainy night reveals a quiet house and a choice to trust the light.",
+    "background_music_url": "https://example.com/music.mp3"
+  },
   "scene": {
-    "id": 0,
-    "background": "/static/house_entrance.jpg",
+    "id": 10,
+    "title": "At the Gate",
+    "content": "Rain taps the iron gate. A warm lantern glows inside the house.",
+    "background_image_url": "https://example.com/image.png",
     "choices": [
       {"id": 1, "text": "Enter the house", "available": true},
       {"id": 2, "text": "Don't enter, go to the barn", "available": true}
     ]
   },
-  "variables": {}
+  "attributes": [
+    {"key": "trust", "label": "Trust", "value": 0},
+    {"key": "security", "label": "Security", "value": 0}
+  ]
 }
 ```
 
-#### `POST /api/choice/`
+#### `POST /story/api/choice/`
 Processes a player choice and transitions to next scene.
 
 - Method: `POST` only
@@ -172,16 +183,16 @@ Processes a player choice and transitions to next scene.
 ```json
 {
   "choice_id": 1,
-  "current_scene_id": 0
+  "story_id": 1
 }
 ```
 
 - Validation behavior:
   - returns `405` if method is not POST
-  - returns `400` if no active session (`game_state` missing)
+  - returns `400` if no active story session
   - returns `400` for invalid JSON
-  - returns `400` for invalid scene
-  - returns `400` for invalid choice
+  - returns `400` if the choice does not match the current scene
+  - returns `404` for invalid choice
 
 - Success response when next scene is non-ending: `200 OK`
 
@@ -189,17 +200,18 @@ Processes a player choice and transitions to next scene.
 {
   "csrf_token": "<token>",
   "scene": {
-    "id": 1,
-    "background": "/static/inside_house.jpg",
+    "id": 11,
+    "title": "Inside the House",
+    "content": "You step into the foyer. A friend offers tea and a story.",
+    "background_image_url": "https://example.com/image.png",
     "choices": [
-      {"id": 3, "text": "Trust the friend", "available": true},
-      {"id": 4, "text": "Don't trust them, go outside", "available": true}
+      {"id": 3, "text": "Trust the friend", "available": true}
     ]
   },
-  "variables": {
-    "trust": 10,
-    "security": 10
-  }
+  "attributes": [
+    {"key": "trust", "label": "Trust", "value": 10},
+    {"key": "security", "label": "Security", "value": 10}
+  ]
 }
 ```
 
@@ -209,10 +221,10 @@ Processes a player choice and transitions to next scene.
 {
   "ending": true,
   "message": "The story concludes here.",
-  "final_variables": {
-    "trust": -5,
-    "security": -10
-  },
+  "final_attributes": [
+    {"key": "trust", "label": "Trust", "value": -5},
+    {"key": "security", "label": "Security", "value": -10}
+  ],
   "path": [0, 3]
 }
 ```

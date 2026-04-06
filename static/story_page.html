@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Play | Tadpole</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'styles/story_page.css' %}?v={{ timestamp }}">
+</head>
+<body>
+<div class="story-shell">
+    <header class="story-header">
+        <div>
+            <div class="story-brand" id="story-name">Loading story...</div>
+            <div class="story-subtitle" id="story-description" hidden></div>
+        </div>
+        <a class="btn btn-outline-dark" href="/">Back to home</a>
+    </header>
+
+    <main class="story-layout">
+        <section class="story-stage" id="story-stage">
+            <div class="story-overlay">
+                <h1 class="story-title" id="story-title">Loading story...</h1>
+                <p class="story-content" id="story-content">Please wait while we fetch the first scene.</p>
+                <div class="story-loader" id="story-loader" hidden>
+                    <span class="loader-spinner" aria-hidden="true"></span>
+                    <span>Loading next scene...</span>
+                </div>
+                <div class="story-choices" id="story-choices"></div>
+                <div class="story-ending" id="story-ending" hidden>
+                    <p class="story-ending-text" id="story-ending-text"></p>
+                    <button class="btn btn-primary" id="story-restart">Restart story</button>
+                </div>
+                <div class="story-error" id="story-error" hidden></div>
+            </div>
+        </section>
+
+        <aside class="story-panel">
+            <div class="panel-card">
+                <h2>Attributes</h2>
+                <div class="story-attributes" id="story-attributes"></div>
+            </div>
+            <div class="panel-card">
+                <h2>Audio</h2>
+                <div class="story-audio" id="story-audio-controls" hidden>
+                    <button class="btn btn-outline-secondary" type="button" id="story-audio-toggle">Mute</button>
+                    <label class="audio-volume">
+                        <span>Volume</span>
+                        <input type="range" id="story-audio-volume" min="0" max="100" value="70">
+                    </label>
+                    <div class="audio-status" id="story-audio-status">Volume 70%</div>
+                </div>
+                <div class="story-audio-empty" id="story-audio-empty">No background music.</div>
+                <audio id="story-audio" preload="auto" loop></audio>
+            </div>
+            <div class="panel-card">
+                <h2>Story Info</h2>
+                <div class="story-meta" id="story-meta">
+                    <div class="meta-row"><span>Story ID</span><strong id="story-id">-</strong></div>
+                    <div class="meta-row"><span>Scene ID</span><strong id="scene-id">-</strong></div>
+                </div>
+            </div>
+        </aside>
+    </main>
+</div>
+<script src="{% static 'scripts/story_page.js' %}?v={{ timestamp }}" defer></script>
+</body>
+</html>
+

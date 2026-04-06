@@ -16,6 +16,20 @@ body {
     z-index: 1;
 }
 
+.topbar-link {
+    color: #1d4ed8;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+}
+
+.topbar-link:hover,
+.topbar-link:focus {
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+}
+
 .brand-mark {
     display: inline-block;
     padding: 0.35rem 0.8rem;
@@ -212,6 +226,37 @@ body {
     color: #1d4ed8;
 }
 
+.hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hero-links-label {
+    font-size: 0.85rem;
+    color: rgba(15, 23, 42, 0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.story-url {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px dashed rgba(37, 99, 235, 0.5);
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.story-url:hover,
+.story-url:focus {
+    background: rgba(37, 99, 235, 0.16);
+}
+
 @media (max-width: 767px) {
     .hero-card,
     .feature-card,
@@ -230,4 +275,3 @@ body {
         gap: 1rem;
     }
 }
-

@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from backend.views import home_page, login_page, start_story, process_choice
+from backend.views import (
+    home_page,
+    login_page,
+    story_list_page,
+    story_play_page,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -9,7 +14,10 @@ urlpatterns = [
     path('', home_page, name='home_page'),
     path('login/', login_page, name='login_page'),
 
-    path('api/start/', start_story, name='start_story'),
-    path('api/choice/', process_choice, name='process_choice'),
     path('api/auth/', include('apps.authentication.urls')),
+
+    # Story routes
+    path('story/', story_list_page, name='story_list_page'),
+    path('story/<int:story_id>/', story_play_page, name='story_play_page'),
+    path('story/api/', include('apps.story.urls')),
 ]
