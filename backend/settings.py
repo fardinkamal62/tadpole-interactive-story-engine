@@ -130,14 +130,25 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
-]
+])
+
+# Allow any subdomain of replit.dev (e.g., myproject.replit.dev)
+CORS_ALLOWED_ORIGIN_REGEXES = env.list('CORS_ALLOWED_ORIGIN_REGEXES', default=[r"^https?://.*\.replit\.dev$"])
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF trusted origins – allow any subdomain of replit.dev
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
+    "https://*.replit.dev",
+    "https://*.replit.dev:8000",
+    "http://*.replit.dev",
+    "http://*.replit.dev:8000",
+])
 
 # For development only - remove in production
 if DEBUG:
