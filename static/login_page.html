@@ -6,29 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in - Tadpole</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}?v={{ timestamp }}">
     <link rel="stylesheet" href="{% static 'styles/login.css' %}?v={{ timestamp }}">
 </head>
 
 <body>
 {% csrf_token %}
 <div class="auth-page">
-    <div class="container">
-        <div class="row justify-content-center align-items-center min-vh-100 py-5">
-            <div class="col-lg-5 col-md-8">
-                <div class="login-card">
-                    <div class="text-center mb-4">
+    <div class="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-10">
+            <div class="w-full max-w-lg">
+                <div class="login-card" data-animate>
+                    <div class="mb-4 text-center">
                         <span class="brand-mark">Tadpole</span>
-                        <h1 class="login-logo mt-2 mb-2">Welcome back</h1>
-                        <p class="text-muted mb-0">Sign in to continue building and playing stories.</p>
+                        <h1 class="login-logo mb-2 mt-2">Welcome back</h1>
+                        <p class="text-muted mb-0">Sign in. Continue building and playing stories.</p>
                     </div>
 
                     <div id="already-logged-in" class="alert alert-info d-none" role="alert">
                         <span id="already-logged-in-text">You are already signed in.</span>
-                        <div class="mt-2 d-flex gap-2">
-                            <a href="/" class="btn btn-sm btn-primary">Go to home</a>
-                            <button type="button" id="logout-btn" class="btn btn-sm btn-outline-secondary">Sign out</button>
+                        <div class="mt-2 flex gap-2">
+                            <a href="/" class="btn btn-primary px-3 py-1 text-sm">Go to home</a>
+                            <button type="button" id="logout-btn" class="btn btn-outline-secondary px-3 py-1 text-sm">Sign out</button>
                         </div>
                     </div>
 
@@ -43,32 +45,28 @@
                         </div>
                         <div class="mb-4">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter password"
-                                   autocomplete="current-password" required>
+                            <div class="password-wrap">
+                                <input type="password" class="form-control" id="password" placeholder="Enter password"
+                                       autocomplete="current-password" required>
+                                <button type="button" class="password-toggle" id="toggle-password" aria-label="Show password">Show</button>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100" id="login-btn">
+                        <button type="submit" class="btn btn-primary w-full py-3 font-semibold" id="login-btn">
                             <span id="btn-text">Sign in</span>
-                            <span id="btn-spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status"></span>
+                            <span id="btn-spinner" class="spinner-border spinner-border-sm d-none ml-2" role="status" aria-hidden="true"></span>
                         </button>
                     </form>
                     </div>
 
-                    <p class="text-center text-muted mt-4 mb-0 small">
-                        Back to <a href="/" class="text-decoration-none">home</a>
+                    <p class="mt-4 mb-0 text-center text-sm text-muted">
+                        Back to <a href="/" class="underline-offset-4 hover:underline">home</a>
                     </p>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.js"
-        integrity="sha512-docBEeq28CCaXCXN7cINkyQs0pRszdQsVBFWUd+pLNlEk3LDlSDDtN7i1H+nTB8tshJPQHS0yu0GW9YGFd/CRg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-<script src="{% static 'scripts/login.js' %}?v={{ timestamp }}"></script>
+<script src="{% static 'scripts/login.js' %}?v={{ timestamp }}" defer></script>
 </body>
 </html>
 

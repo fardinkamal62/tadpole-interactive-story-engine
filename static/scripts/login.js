@@ -1,117 +1,148 @@
-const $form     = $('#login-form');
-const $username = $('#username');
-const $password = $('#password');
-const $btnText  = $('#btn-text');
-const $spinner  = $('#btn-spinner');
-const $error    = $('#error-alert');
-const $btn      = $('#login-btn');
-const $loggedIn = $('#already-logged-in');
-const $loggedInText = $('#already-logged-in-text');
-const $formWrap = $('#login-form-wrap');
+(function () {
+    const form = document.getElementById('login-form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const btnText = document.getElementById('btn-text');
+    const spinner = document.getElementById('btn-spinner');
+    const errorAlert = document.getElementById('error-alert');
+    const loginBtn = document.getElementById('login-btn');
+    const loggedInAlert = document.getElementById('already-logged-in');
+    const loggedInText = document.getElementById('already-logged-in-text');
+    const formWrap = document.getElementById('login-form-wrap');
+    const loginCard = document.querySelector('.login-card');
+    const togglePassword = document.getElementById('toggle-password');
+    const logoutBtn = document.getElementById('logout-btn');
 
-function showAlreadyLoggedIn() {
-    const rawUser = localStorage.getItem('auth_user');
-    let name = '';
-    try {
-        const parsed = rawUser ? JSON.parse(rawUser) : null;
-        name = parsed?.username || '';
-    } catch (err) {
-        name = '';
+    document.querySelectorAll('[data-animate]').forEach((node) => {
+        node.classList.add('is-visible');
+    });
+
+    if (!form || !usernameInput || !passwordInput || !btnText || !spinner || !errorAlert || !loginBtn) {
+        return;
     }
 
-    if (name) {
-        $loggedInText.text(`You are already signed in as ${name}.`);
-    }
-    $loggedIn.removeClass('d-none');
-    $formWrap.addClass('d-none');
-    $error.addClass('d-none').text('');
-}
+    const showAlreadyLoggedIn = () => {
+        const rawUser = localStorage.getItem('auth_user');
+        let name;
 
-function showError(msg) {
-    $error.text(msg).removeClass('d-none');
-}
+        try {
+            const parsed = rawUser ? JSON.parse(rawUser) : null;
+            name = parsed?.username || '';
+        } catch (err) {
+            name = '';
+        }
 
-function hideError() {
-    $error.addClass('d-none').text('');
-}
-
-function setLoading(on) {
-    $btn.prop('disabled', on);
-    $btnText.text(on ? 'Signing in…' : 'Sign in');
-    $spinner.toggleClass('d-none', !on);
-}
-
-if (localStorage.getItem('auth_token')) {
-    showAlreadyLoggedIn();
-}
-
-$('#logout-btn').on('click', function () {
-    const token = localStorage.getItem('auth_token');
-
-    const finalizeLogout = function () {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
-        window.location.reload();
+        if (name && loggedInText) {
+            loggedInText.textContent = `You are already signed in as ${name}.`;
+        }
+        loggedInAlert?.classList.remove('d-none');
+        formWrap?.classList.add('d-none');
+        errorAlert.classList.add('d-none');
+        errorAlert.textContent = '';
     };
 
-    if (!token) {
-        finalizeLogout();
-        return;
-    }
+    const showError = (message) => {
+        if (loginCard) {
+            loginCard.classList.remove('shake');
+            // Restart animation so consecutive invalid submits still provide feedback.
+            void loginCard.offsetWidth;
+            loginCard.classList.add('shake');
+        }
+        errorAlert.textContent = message;
+        errorAlert.classList.remove('d-none');
+    };
 
-    fetch('/api/auth/logout/', {
-        method: 'POST',
-        headers: {
-            Authorization: `Token ${token}`,
-        },
-    }).finally(finalizeLogout);
-});
+    const hideError = () => {
+        errorAlert.classList.add('d-none');
+        errorAlert.textContent = '';
+    };
 
-$form.on('submit', async function (e) {
-    e.preventDefault();
-    hideError();
+    const setLoading = (isLoading) => {
+        loginBtn.disabled = isLoading;
+        btnText.textContent = isLoading ? 'Signing in...' : 'Sign in';
+        spinner.classList.toggle('d-none', !isLoading);
+    };
 
-    const username = $username.val().trim();
-    const password = $password.val();
-
-    if (!username || !password) {
-        showError('Please enter both username and password.');
-        return;
-    }
-
-    setLoading(true);
-    try {
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-        const response = await fetch('/api/auth/login/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({ username, password }),
+    if (togglePassword) {
+        togglePassword.addEventListener('click', () => {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            togglePassword.textContent = isHidden ? 'Hide' : 'Show';
+            togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
         });
+    }
 
-        const data = await response.json();
+    if (localStorage.getItem('auth_token')) {
+        showAlreadyLoggedIn();
+    }
 
-        if (!response.ok) {
-            const msg = data?.errors?.non_field_errors?.[0]
-                || data?.message
-                || 'Invalid username or password.';
-            showError(msg);
+    logoutBtn?.addEventListener('click', () => {
+        const token = localStorage.getItem('auth_token');
+
+        const finalizeLogout = () => {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+            window.location.reload();
+        };
+
+        if (!token) {
+            finalizeLogout();
             return;
         }
 
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('auth_user', JSON.stringify(data.user));
+        fetch('/api/auth/logout/', {
+            method: 'POST',
+            headers: {
+                Authorization: `Token ${token}`,
+            },
+        }).finally(finalizeLogout);
+    });
 
-        const next = new URLSearchParams(window.location.search).get('next') || '/';
-        window.location.replace(next);
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        hideError();
 
-    } catch (err) {
-        console.error('Login error:', err);
-        showError('Something went wrong. Please try again.');
-    } finally {
-        setLoading(false);
-    }
-});
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+            showError('Please enter both username and password.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            const response = await fetch('/api/auth/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                const message = data?.errors?.non_field_errors?.[0]
+                    || data?.message
+                    || 'Invalid username or password.';
+                showError(message);
+                return;
+            }
+
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('auth_user', JSON.stringify(data.user));
+
+            const next = new URLSearchParams(window.location.search).get('next') || '/';
+            window.location.replace(next);
+        } catch (err) {
+            console.error('Login error:', err);
+            showError('Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    });
+})();
 

@@ -24,6 +24,29 @@ let activeStoryId = null;
 let activeStoryMeta = null;
 let audioReady = false;
 
+const animateInView = () => {
+    const animatedNodes = document.querySelectorAll("[data-animate]");
+    if (!animatedNodes.length) {
+        return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+        animatedNodes.forEach((node) => node.classList.add("is-visible"));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    animatedNodes.forEach((node) => observer.observe(node));
+};
+
 const getStoryIdFromQuery = () => {
     const pathMatch = window.location.pathname.match(/\/story\/(\d+)\/?/);
     if (pathMatch) {
@@ -59,6 +82,7 @@ const setStoryMeta = (story) => {
 
 const setLoading = (isLoading) => {
     storyLoader.hidden = !isLoading;
+    storyStage.classList.toggle("is-loading", isLoading);
     storyChoices.querySelectorAll("button").forEach((button) => {
         const isAvailable = button.dataset.available === "1";
         button.disabled = isLoading || !isAvailable;
@@ -146,6 +170,7 @@ const renderChoices = (choices) => {
         button.textContent = choice.text;
         button.dataset.available = choice.available ? "1" : "0";
         button.disabled = !choice.available;
+        button.style.animationDelay = `${Math.min(storyChoices.children.length * 60, 220)}ms`;
         button.addEventListener("click", () => handleChoice(choice.id));
         storyChoices.appendChild(button);
     });
@@ -153,6 +178,9 @@ const renderChoices = (choices) => {
 
 const renderScene = (payload) => {
     const scene = payload.scene;
+    storyStage.classList.remove("scene-swap");
+    void storyStage.offsetWidth;
+    storyStage.classList.add("scene-swap");
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
     storyTitle.textContent = scene.title || "Scene";
@@ -166,6 +194,9 @@ const renderScene = (payload) => {
 };
 
 const renderEnding = (payload) => {
+    storyStage.classList.remove("scene-swap");
+    void storyStage.offsetWidth;
+    storyStage.classList.add("scene-swap");
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
     storyEnding.hidden = false;
@@ -242,4 +273,5 @@ storyAudioToggle.addEventListener("click", () => {
 });
 storyAudioVolume.addEventListener("input", applyVolume);
 
+animateInView();
 startStory();
