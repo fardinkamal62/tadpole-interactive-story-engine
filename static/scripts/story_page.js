@@ -13,16 +13,51 @@ const storyName = document.getElementById("story-name");
 const storyDescription = document.getElementById("story-description");
 const storyLoader = document.getElementById("story-loader");
 const storyAudio = document.getElementById("story-audio");
+const storyAudioControl = document.getElementById("story-audio-control");
 const storyAudioControls = document.getElementById("story-audio-controls");
 const storyAudioEmpty = document.getElementById("story-audio-empty");
 const storyAudioToggle = document.getElementById("story-audio-toggle");
 const storyAudioVolume = document.getElementById("story-audio-volume");
 const storyAudioStatus = document.getElementById("story-audio-status");
+const storyFullscreenToggle = document.getElementById("story-fullscreen-toggle");
+const storyInfoControl = document.getElementById("story-info-control");
+const storyInfoToggle = document.getElementById("story-info-toggle");
 
 let csrfToken = "";
 let activeStoryId = null;
 let activeStoryMeta = null;
 let audioReady = false;
+
+const isFullscreenSupported = !!(document.fullscreenEnabled && storyStage?.requestFullscreen);
+
+const isStageFullscreen = () => document.fullscreenElement === storyStage;
+
+const syncFullscreenButton = () => {
+    if (!storyFullscreenToggle) {
+        return;
+    }
+
+    const active = isStageFullscreen();
+    storyFullscreenToggle.classList.toggle("is-fullscreen", active);
+    storyFullscreenToggle.setAttribute("aria-label", active ? "Exit fullscreen" : "Enter fullscreen");
+    storyFullscreenToggle.setAttribute("aria-pressed", active ? "true" : "false");
+};
+
+const toggleFullscreen = async () => {
+    if (!isFullscreenSupported || !storyStage) {
+        return;
+    }
+
+    try {
+        if (isStageFullscreen()) {
+            await document.exitFullscreen();
+            return;
+        }
+        await storyStage.requestFullscreen();
+    } catch (error) {
+        // Ignore permission/user gesture errors and keep current mode.
+    }
+};
 
 const animateInView = () => {
     const animatedNodes = document.querySelectorAll("[data-animate]");
@@ -90,6 +125,13 @@ const setLoading = (isLoading) => {
 };
 
 const updateAudioStatus = () => {
+    if (!storyAudioStatus || !storyAudioToggle) {
+        return;
+    }
+
+    storyAudioToggle.classList.toggle("is-muted", storyAudio.muted || storyAudio.volume === 0);
+    storyAudioToggle.setAttribute("aria-label", storyAudio.muted || storyAudio.volume === 0 ? "Unmute" : "Mute");
+
     if (storyAudio.muted || storyAudio.volume === 0) {
         storyAudioStatus.textContent = "Muted";
         return;
@@ -98,18 +140,34 @@ const updateAudioStatus = () => {
 };
 
 const applyVolume = () => {
+    if (!storyAudioVolume || !storyAudioToggle) {
+        return;
+    }
+
     const volumeValue = Number(storyAudioVolume.value) / 100;
     storyAudio.volume = volumeValue;
     if (volumeValue > 0 && storyAudio.muted) {
         storyAudio.muted = false;
-        storyAudioToggle.textContent = "Mute";
     }
     updateAudioStatus();
 };
 
 const setAudioControlsVisible = (visible) => {
-    storyAudioControls.hidden = !visible;
-    storyAudioEmpty.hidden = visible;
+    if (storyAudioControls) {
+        storyAudioControls.hidden = !visible;
+    }
+    if (storyAudioEmpty) {
+        storyAudioEmpty.hidden = visible;
+    }
+    if (storyAudioControl) {
+        storyAudioControl.classList.toggle("is-disabled", !visible);
+        if (!visible) {
+            storyAudioControl.classList.remove("is-open");
+        }
+    }
+    if (storyAudioToggle) {
+        storyAudioToggle.disabled = !visible;
+    }
 };
 
 const attemptPlayAudio = () => {
@@ -153,6 +211,14 @@ const setError = (message) => {
 
 const renderAttributes = (attributes) => {
     storyAttributes.innerHTML = "";
+    if (!attributes.length) {
+        const row = document.createElement("div");
+        row.className = "attribute-row";
+        row.innerHTML = "<span>No tracked attributes</span><strong>-</strong>";
+        storyAttributes.appendChild(row);
+        return;
+    }
+
     attributes.forEach((attribute) => {
         const row = document.createElement("div");
         row.className = "attribute-row";
@@ -262,16 +328,57 @@ const handleChoice = async (choiceId) => {
     }
 };
 
-storyRestart.addEventListener("click", () => startStory());
-storyAudioToggle.addEventListener("click", () => {
-    storyAudio.muted = !storyAudio.muted;
-    storyAudioToggle.textContent = storyAudio.muted ? "Unmute" : "Mute";
-    updateAudioStatus();
-    if (!storyAudio.muted) {
-        attemptPlayAudio();
+if (storyRestart) {
+    storyRestart.addEventListener("click", () => startStory());
+}
+
+if (storyAudioToggle) {
+    storyAudioToggle.addEventListener("click", () => {
+        if (!audioReady) {
+            return;
+        }
+        storyAudio.muted = !storyAudio.muted;
+        updateAudioStatus();
+        if (!storyAudio.muted) {
+            attemptPlayAudio();
+        }
+    });
+}
+
+if (storyAudioVolume) {
+    storyAudioVolume.addEventListener("input", applyVolume);
+}
+
+if (storyFullscreenToggle) {
+    if (!isFullscreenSupported) {
+        storyFullscreenToggle.classList.add("is-hidden");
+    } else {
+        syncFullscreenButton();
+        storyFullscreenToggle.addEventListener("click", toggleFullscreen);
+        document.addEventListener("fullscreenchange", syncFullscreenButton);
     }
-});
-storyAudioVolume.addEventListener("input", applyVolume);
+}
+
+if (storyInfoControl && storyInfoToggle) {
+    storyInfoToggle.addEventListener("click", () => {
+        const isOpen = storyInfoControl.classList.toggle("is-open");
+        storyInfoToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!storyInfoControl.contains(event.target)) {
+            storyInfoControl.classList.remove("is-open");
+            storyInfoToggle.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            storyInfoControl.classList.remove("is-open");
+            storyInfoToggle.setAttribute("aria-expanded", "false");
+        }
+    });
+}
 
 animateInView();
 startStory();

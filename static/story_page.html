@@ -14,59 +14,89 @@
 </head>
 <body>
 <div class="story-shell">
-    <header class="story-header" data-animate>
-        <div>
-            <div class="story-brand" id="story-name">Loading story...</div>
-            <div class="story-subtitle" id="story-description" hidden></div>
+    <header class="topbar story-navbar mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6" data-animate>
+        <div class="story-navbar-meta">
+            <div class="brand-mark" id="story-name">Loading story...</div>
+            <div class="brand-subtitle" id="story-description" hidden></div>
         </div>
         <a class="btn btn-outline-dark px-4 py-2 text-sm font-semibold" href="/">Back to home</a>
     </header>
 
-    <main class="story-layout">
-        <section class="story-stage" id="story-stage" data-animate>
-            <div class="story-overlay">
-                <h1 class="story-title" id="story-title">Loading story...</h1>
-                <p class="story-content" id="story-content">Please wait while we fetch the first scene.</p>
-                <div class="story-loader" id="story-loader" hidden>
-                    <span class="loader-spinner" aria-hidden="true"></span>
-                    <span>Loading next scene...</span>
+    <section class="story-stage" id="story-stage" data-animate>
+        <div class="story-hud">
+            <div class="hud-left">
+                <div class="audio-control" id="story-audio-control">
+                    <button class="icon-button" type="button" id="story-audio-toggle" aria-label="Mute">
+                        <svg class="icon icon-volume-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                            <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
+                        </svg>
+                        <svg class="icon icon-volume-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"></polygon>
+                            <line x1="23" y1="9" x2="17" y2="15"></line>
+                            <line x1="17" y1="9" x2="23" y2="15"></line>
+                        </svg>
+                    </button>
+                    <div class="audio-popover" id="story-audio-controls" hidden>
+                        <label class="audio-volume">
+                            <span>Volume</span>
+                            <input type="range" id="story-audio-volume" min="0" max="100" value="70">
+                        </label>
+                        <div class="audio-status" id="story-audio-status">Volume 70%</div>
+                    </div>
+                    <div class="story-audio-empty" id="story-audio-empty">No background music.</div>
                 </div>
-                <div class="story-choices" id="story-choices"></div>
-                <div class="story-ending" id="story-ending" hidden>
-                    <p class="story-ending-text" id="story-ending-text"></p>
-                    <button class="btn btn-primary px-4 py-2 text-sm font-semibold" id="story-restart">Restart story</button>
-                </div>
-                <div class="story-error" id="story-error" hidden></div>
+                <button class="icon-button" type="button" id="story-fullscreen-toggle" aria-label="Enter fullscreen" aria-pressed="false">
+                    <svg class="icon icon-fullscreen-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <polyline points="9 21 3 21 3 15"></polyline>
+                        <line x1="21" y1="3" x2="14" y2="10"></line>
+                        <line x1="3" y1="21" x2="10" y2="14"></line>
+                    </svg>
+                    <svg class="icon icon-fullscreen-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="9 3 3 3 3 9"></polyline>
+                        <polyline points="15 21 21 21 21 15"></polyline>
+                        <line x1="3" y1="3" x2="10" y2="10"></line>
+                        <line x1="21" y1="21" x2="14" y2="14"></line>
+                    </svg>
+                </button>
             </div>
-        </section>
 
-        <aside class="story-panel" data-animate>
-            <div class="panel-card">
-                <h2>Attributes</h2>
-                <div class="story-attributes" id="story-attributes"></div>
-            </div>
-            <div class="panel-card">
-                <h2>Audio</h2>
-                <div class="story-audio" id="story-audio-controls" hidden>
-                    <button class="btn btn-outline-secondary px-3 py-2 text-sm" type="button" id="story-audio-toggle">Mute</button>
-                    <label class="audio-volume">
-                        <span>Volume</span>
-                        <input type="range" id="story-audio-volume" min="0" max="100" value="70">
-                    </label>
-                    <div class="audio-status" id="story-audio-status">Volume 70%</div>
-                </div>
-                <div class="story-audio-empty" id="story-audio-empty">No background music.</div>
-                <audio id="story-audio" preload="auto" loop></audio>
-            </div>
-            <div class="panel-card">
-                <h2>Story Info</h2>
-                <div class="story-meta" id="story-meta">
-                    <div class="meta-row"><span>Story ID</span><strong id="story-id">-</strong></div>
-                    <div class="meta-row"><span>Scene ID</span><strong id="scene-id">-</strong></div>
+            <div class="info-control" id="story-info-control">
+                <button class="icon-button icon-button-info" type="button" id="story-info-toggle" aria-expanded="false" aria-label="Show story information">i</button>
+                <div class="info-popover" id="story-info-popover">
+                    <div class="panel-card">
+                        <h2>Attributes</h2>
+                        <div class="story-attributes" id="story-attributes"></div>
+                    </div>
+                    <div class="panel-card">
+                        <h2>Story Info</h2>
+                        <div class="story-meta" id="story-meta">
+                            <div class="meta-row"><span>Story ID</span><strong id="story-id">-</strong></div>
+                            <div class="meta-row"><span>Scene ID</span><strong id="scene-id">-</strong></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </aside>
-    </main>
+        </div>
+
+        <div class="story-overlay">
+            <h1 class="story-title" id="story-title">Loading story...</h1>
+            <p class="story-content" id="story-content">Please wait while we fetch the first scene.</p>
+            <div class="story-loader" id="story-loader" hidden>
+                <span class="loader-spinner" aria-hidden="true"></span>
+                <span>Loading next scene...</span>
+            </div>
+            <div class="story-choices" id="story-choices"></div>
+            <div class="story-ending" id="story-ending" hidden>
+                <p class="story-ending-text" id="story-ending-text"></p>
+                <button class="btn btn-primary px-4 py-2 text-sm font-semibold" id="story-restart">Restart story</button>
+            </div>
+            <div class="story-error" id="story-error" hidden></div>
+        </div>
+        <audio id="story-audio" preload="auto" loop></audio>
+    </section>
 </div>
 <script src="{% static 'scripts/story_page.js' %}?v={{ timestamp }}" defer></script>
 </body>
