@@ -26,6 +26,7 @@
     revealElements();
 
     const loginBtn = document.getElementById('home-login-btn');
+    const heroLoginCreateBtn = document.getElementById('home-hero-login-create-btn');
     const profileMenu = document.getElementById('home-profile-menu');
     const dashboardBtn = document.getElementById('home-dashboard-btn');
     const profileDashboardLink = document.getElementById('home-profile-dashboard-link');
@@ -43,6 +44,9 @@
     }
 
     loginBtn.classList.add('d-none');
+    if (heroLoginCreateBtn) {
+        heroLoginCreateBtn.classList.add('d-none');
+    }
     profileMenu.classList.remove('d-none');
     dashboardBtn.setAttribute('href', '/story/');
     profileDashboardLink.setAttribute('href', '/story/');
