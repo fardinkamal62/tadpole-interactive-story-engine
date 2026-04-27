@@ -5,14 +5,14 @@
 }
 
 .topbar {
-    border-bottom: 1px solid rgba(153, 169, 255, 0.2);
+    border-bottom: 1px solid var(--border);
 }
 
 .brand-mark {
     display: inline-block;
     border-radius: 999px;
     border: 1px solid var(--border);
-    background: rgba(132, 148, 255, 0.15);
+    background: rgba(92, 109, 223, 0.12);
     color: var(--accent-strong);
     text-transform: uppercase;
     font-size: 0.75rem;
@@ -42,20 +42,20 @@
 .story-search {
     width: min(500px, 100%);
     border-radius: 999px;
-    border: 1px solid rgba(150, 166, 255, 0.34);
-    background: rgba(8, 12, 28, 0.62);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.92);
     color: var(--text-main);
     padding: 0.65rem 1rem;
 }
 
 .story-search::placeholder {
-    color: rgba(182, 194, 239, 0.62);
+    color: rgba(85, 96, 141, 0.68);
 }
 
 .story-search:focus {
     outline: none;
-    border-color: rgba(162, 177, 255, 0.7);
-    box-shadow: 0 0 0 0.18rem rgba(125, 141, 255, 0.18);
+    border-color: rgba(92, 109, 223, 0.54);
+    box-shadow: 0 0 0 0.18rem rgba(92, 109, 223, 0.14);
 }
 
 .story-search-meta {
@@ -99,7 +99,7 @@
 }
 
 .story-muted {
-    color: rgba(182, 194, 239, 0.7);
+    color: rgba(85, 96, 141, 0.74);
 }
 
 .empty-state {

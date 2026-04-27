@@ -23,10 +23,8 @@
     </header>
 
     <main class="mx-auto w-full max-w-6xl px-4 pb-10">
-        <section class="story-tools" data-animate>
-            <label for="story-search" class="story-search-label">Find story</label>
+        <section class="story-tools flex justify-center items-center h-full py-8" data-animate>
             <input id="story-search" class="story-search" type="search" placeholder="Search by title or description">
-            <p class="story-search-meta" id="story-search-meta">Showing all stories</p>
         </section>
         <section class="story-grid">
             {% if stories %}
