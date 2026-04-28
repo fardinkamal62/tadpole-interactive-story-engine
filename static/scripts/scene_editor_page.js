@@ -29,9 +29,11 @@
     const backgroundUrlInput = document.getElementById('scene-background-url');
     const isStartingInput = document.getElementById('scene-is-starting');
     const isEndingInput = document.getElementById('scene-is-ending');
-    if (!titleEl || !backLink || !errorBox || !successBox || !form || !sceneList || !choiceRows || !addChoiceBtn || !loadingText || !submitBtn || !titleInput || !contentInput || !backgroundUrlInput || !isStartingInput || !isEndingInput) {
+    if (!backLink || !errorBox || !successBox || !form || !sceneList || !choiceRows || !addChoiceBtn || !loadingText || !submitBtn || !titleInput || !contentInput || !backgroundUrlInput || !isStartingInput || !isEndingInput) {
         return;
     }
+    // Set fallback nav target before async loading so back link never stays '#'.
+    backLink.href = `/story/${storyId}/edit/`;
     let attributes = [];
     let scenes = [];
     let editingSceneId = null;
@@ -282,8 +284,9 @@
         if (!response.ok) {
             throw new Error(data?.error || 'Failed to load scene editor data.');
         }
-        titleEl.textContent = data.story.title;
-        backLink.href = `/story/${storyId}/edit/`;
+        if (titleEl) {
+            titleEl.textContent = data.story.title;
+        }
         attributes = data.attributes || [];
         scenes = data.scenes || [];
         renderSceneList();
