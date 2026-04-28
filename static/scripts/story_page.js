@@ -106,6 +106,8 @@ const setStoryMeta = (story) => {
     }
     activeStoryMeta = story;
     storyName.textContent = story.title || "Story";
+    document.title = `${story.title || "Story"} | Tadpole`;
+    window.title = document.title;
     if (story.description) {
         storyDescription.textContent = story.description;
         storyDescription.hidden = false;

@@ -295,7 +295,16 @@ def story_scene_editor_page(request, story_id):
 
 def story_play_page(request, story_id):
     """Render the story play page for a specific story."""
-    get_object_or_404(StoryModel, pk=story_id)
+    try:
+        story = StoryModel.objects.get(pk=story_id)
+    except StoryModel.DoesNotExist:
+        context = {"timestamp": int(time.time()), "story_id": story_id}
+        response = render(request, "story_not_found.html", context, status=404)
+        response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response["Pragma"] = "no-cache"
+        response["Expires"] = "0"
+        return response
+
     context = {"timestamp": int(time.time())}
     response = render(request, "story_page.html", context)
     response["Cache-Control"] = "no-cache, no-store, must-revalidate"
