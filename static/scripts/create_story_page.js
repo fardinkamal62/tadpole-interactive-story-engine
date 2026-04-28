@@ -9,7 +9,7 @@
     }
 
     const form = document.getElementById('create-story-form');
-    const logoutBtn = document.getElementById('creator-logout-btn');
+    const openStoryBtn = document.getElementById('creator-open-story-btn');
     const titleInput = document.getElementById('story-title');
     const descriptionInput = document.getElementById('story-description');
     const audioInput = document.getElementById('background-audio');
@@ -27,6 +27,7 @@
     }
 
     const bootstrapData = bootstrapNode ? JSON.parse(bootstrapNode.textContent) : null;
+    const storyId = bootstrapData?.story_id;
     const isEditMode = Boolean(bootstrapData?.story_id);
     const submitUrl = isEditMode
         ? `/story/api/${bootstrapData.story_id}/update/`
@@ -148,17 +149,8 @@
         }
     };
 
-    logoutBtn?.addEventListener('click', async () => {
-        try {
-            await fetch('/api/auth/logout/', {
-                method: 'POST',
-                headers: { Authorization: `Token ${token}` },
-            });
-        } finally {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
-            window.location.replace('/login/');
-        }
+    openStoryBtn.addEventListener('click', () => {
+        window.open(`/story/${storyId}`, '_blank');
     });
 
     addRowBtn.addEventListener('click', () => addAttributeRow());

@@ -15,7 +15,7 @@
     }
     const titleEl = document.getElementById('scene-editor-story-title');
     const backLink = document.getElementById('scene-editor-back-link');
-    const logoutBtn = document.getElementById('scene-editor-logout-btn');
+    const openStoryBtn = document.getElementById('scene-editor-open-story-btn');
     const errorBox = document.getElementById('scene-editor-error');
     const successBox = document.getElementById('scene-editor-success');
     const form = document.getElementById('scene-create-form');
@@ -29,7 +29,7 @@
     const backgroundUrlInput = document.getElementById('scene-background-url');
     const isStartingInput = document.getElementById('scene-is-starting');
     const isEndingInput = document.getElementById('scene-is-ending');
-    if (!titleEl || !backLink || !logoutBtn || !errorBox || !successBox || !form || !sceneList || !choiceRows || !addChoiceBtn || !loadingText || !submitBtn || !titleInput || !contentInput || !backgroundUrlInput || !isStartingInput || !isEndingInput) {
+    if (!titleEl || !backLink || !errorBox || !successBox || !form || !sceneList || !choiceRows || !addChoiceBtn || !loadingText || !submitBtn || !titleInput || !contentInput || !backgroundUrlInput || !isStartingInput || !isEndingInput) {
         return;
     }
     let attributes = [];
@@ -330,17 +330,8 @@
         });
         return parsed;
     };
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            await fetch('/api/auth/logout/', {
-                method: 'POST',
-                headers: { Authorization: `Token ${token}` },
-            });
-        } finally {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
-            window.location.replace('/login/');
-        }
+    openStoryBtn.addEventListener('click', () => {
+        window.open(`/story/${storyId}`, '_blank');
     });
     addChoiceBtn.addEventListener('click', () => {
         choiceRows.appendChild(createChoiceRow());
