@@ -72,12 +72,13 @@
 
     const createConditionRow = (key = '', val = '') => {
         const row = document.createElement('div');
-        row.className = 'choice-grid-row-sm';
+        row.className = 'condition-row';
         row.dataset.conditionRow = 'true';
         row.innerHTML = `
             <select data-require-key class="choice-select">${optionsForAttributes()}</select>
-            <input data-require-value class="choice-select" type="number" step="1" placeholder="Required >=" value="${val}">
-            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-row>X</button>
+            <span class="condition-op">≥</span>
+            <input data-require-value class="choice-input-num" type="number" step="1" placeholder="0" value="${val}">
+            <button type="button" class="btn-icon-sm" data-remove-row title="Remove condition">×</button>
         `;
         if (key) row.querySelector('[data-require-key]').value = key;
         row.querySelector('[data-remove-row]').addEventListener('click', () => row.remove());
@@ -86,12 +87,13 @@
 
     const createEffectRow = (key = '', val = '') => {
         const row = document.createElement('div');
-        row.className = 'choice-grid-row-sm';
+        row.className = 'effect-row';
         row.dataset.effectRow = 'true';
         row.innerHTML = `
             <select data-effect-key class="choice-select">${optionsForAttributes()}</select>
-            <input data-effect-delta class="choice-select" type="number" step="1" placeholder="Effect +/-" value="${val}">
-            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-row>X</button>
+            <span class="effect-op">Δ</span>
+            <input data-effect-delta class="choice-input-num" type="number" step="1" placeholder="0" value="${val}">
+            <button type="button" class="btn-icon-sm" data-remove-row title="Remove effect">×</button>
         `;
         if (key) row.querySelector('[data-effect-key]').value = key;
         row.querySelector('[data-remove-row]').addEventListener('click', () => row.remove());
@@ -115,14 +117,14 @@
             </div>
             <div class="choice-details-grid">
                 <div class="choice-conditions-container">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <div class="choice-conditions-header">
                         <span class="text-sm font-semibold">Required attributes</span>
                         <button type="button" class="btn btn-sm btn-outline-primary" data-add-condition>+ Condition</button>
                     </div>
                     <div class="conditions-list"></div>
                 </div>
                 <div class="choice-effects-container">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <div class="choice-effects-header">
                         <span class="text-sm font-semibold">Effects on attributes</span>
                         <button type="button" class="btn btn-sm btn-outline-primary" data-add-effect>+ Effect</button>
                     </div>
