@@ -186,24 +186,42 @@ def _parse_choice_payload(story, raw_choice, index):
             raise ValueError(f"choices[{index}].target_scene_id must belong to this story")
 
     conditions = {}
-    requirement = raw_choice.get("requirement") or {}
-    requirement_key = _normalize_attribute_key(requirement.get("key"))
-    requirement_value = requirement.get("value")
-    if requirement_key and requirement_value not in (None, ""):
-        try:
-            conditions[requirement_key] = int(str(requirement_value))
-        except (TypeError, ValueError):
-            raise ValueError(f"choices[{index}].requirement.value must be an integer")
+    if isinstance(raw_choice.get("conditions"), dict):
+        for k, v in raw_choice["conditions"].items():
+            key = _normalize_attribute_key(k)
+            if key and v not in (None, ""):
+                try:
+                    conditions[key] = int(str(v))
+                except (TypeError, ValueError):
+                    raise ValueError(f"choices[{index}].conditions.{k} must be an integer")
+    else:
+        requirement = raw_choice.get("requirement") or {}
+        requirement_key = _normalize_attribute_key(requirement.get("key"))
+        requirement_value = requirement.get("value")
+        if requirement_key and requirement_value not in (None, ""):
+            try:
+                conditions[requirement_key] = int(str(requirement_value))
+            except (TypeError, ValueError):
+                raise ValueError(f"choices[{index}].requirement.value must be an integer")
 
     effects = {}
-    effect = raw_choice.get("effect") or {}
-    effect_key = _normalize_attribute_key(effect.get("key"))
-    effect_delta = effect.get("delta")
-    if effect_key and effect_delta not in (None, ""):
-        try:
-            effects[effect_key] = int(str(effect_delta))
-        except (TypeError, ValueError):
-            raise ValueError(f"choices[{index}].effect.delta must be an integer")
+    if isinstance(raw_choice.get("effects"), dict):
+        for k, v in raw_choice["effects"].items():
+            key = _normalize_attribute_key(k)
+            if key and v not in (None, ""):
+                try:
+                    effects[key] = int(str(v))
+                except (TypeError, ValueError):
+                    raise ValueError(f"choices[{index}].effects.{k} must be an integer")
+    else:
+        effect = raw_choice.get("effect") or {}
+        effect_key = _normalize_attribute_key(effect.get("key"))
+        effect_delta = effect.get("delta")
+        if effect_key and effect_delta not in (None, ""):
+            try:
+                effects[effect_key] = int(str(effect_delta))
+            except (TypeError, ValueError):
+                raise ValueError(f"choices[{index}].effect.delta must be an integer")
 
     return {
         "text": text,

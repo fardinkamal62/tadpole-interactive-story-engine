@@ -69,53 +69,101 @@
         });
         return opts.join('');
     };
+
+    const createConditionRow = (key = '', val = '') => {
+        const row = document.createElement('div');
+        row.className = 'choice-grid-row-sm';
+        row.dataset.conditionRow = 'true';
+        row.innerHTML = `
+            <select data-require-key class="choice-select">${optionsForAttributes()}</select>
+            <input data-require-value class="choice-select" type="number" step="1" placeholder="Required >=" value="${val}">
+            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-row>X</button>
+        `;
+        if (key) row.querySelector('[data-require-key]').value = key;
+        row.querySelector('[data-remove-row]').addEventListener('click', () => row.remove());
+        return row;
+    };
+
+    const createEffectRow = (key = '', val = '') => {
+        const row = document.createElement('div');
+        row.className = 'choice-grid-row-sm';
+        row.dataset.effectRow = 'true';
+        row.innerHTML = `
+            <select data-effect-key class="choice-select">${optionsForAttributes()}</select>
+            <input data-effect-delta class="choice-select" type="number" step="1" placeholder="Effect +/-" value="${val}">
+            <button type="button" class="btn btn-sm btn-outline-danger" data-remove-row>X</button>
+        `;
+        if (key) row.querySelector('[data-effect-key]').value = key;
+        row.querySelector('[data-remove-row]').addEventListener('click', () => row.remove());
+        return row;
+    };
+
     const createChoiceRow = (choiceData = null) => {
         const row = document.createElement('div');
         row.className = 'choice-row';
         row.dataset.choiceRow = 'true';
         let textVal = '';
         let targetVal = '';
-        let requireKeyVal = '';
-        let requireValueVal = '';
-        let effectKeyVal = '';
-        let effectDeltaVal = '';
         if (choiceData) {
             textVal = choiceData.text || '';
             targetVal = choiceData.target_scene_id || '';
-            requireKeyVal = choiceData.conditions?.key || choiceData.requirement?.key || '';
-            requireValueVal = choiceData.conditions?.value || choiceData.requirement?.value || '';
-            // effects can be dict {key: delta} or effect object {key, delta}
-            if (choiceData.effects && typeof choiceData.effects === 'object') {
-                const keys = Object.keys(choiceData.effects);
-                if (keys.length > 0) {
-                    effectKeyVal = keys[0];
-                    effectDeltaVal = choiceData.effects[keys[0]];
-                }
-            } else if (choiceData.effect && typeof choiceData.effect === 'object') {
-                effectKeyVal = choiceData.effect.key || '';
-                effectDeltaVal = choiceData.effect.delta || '';
-            }
         }
         row.innerHTML = `
             <div class="choice-grid">
                 <input data-choice-text class="choice-select" type="text" maxlength="200" placeholder="Choice text" value="${textVal}">
                 <select data-choice-target class="choice-select">${optionsForScenes()}</select>
             </div>
-            <div class="choice-grid-4">
-                <select data-require-key class="choice-select">${optionsForAttributes()}</select>
-                <input data-require-value class="choice-select" type="number" step="1" placeholder="Required >=" value="${requireValueVal}">
-                <select data-effect-key class="choice-select">${optionsForAttributes()}</select>
-                <input data-effect-delta class="choice-select" type="number" step="1" placeholder="Effect +/-" value="${effectDeltaVal}">
+            <div class="choice-details-grid">
+                <div class="choice-conditions-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                        <span class="text-sm font-semibold">Required attributes</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-add-condition>+ Condition</button>
+                    </div>
+                    <div class="conditions-list"></div>
+                </div>
+                <div class="choice-effects-container">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                        <span class="text-sm font-semibold">Effects on attributes</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-add-effect>+ Effect</button>
+                    </div>
+                    <div class="effects-list"></div>
+                </div>
             </div>
-            <button type="button" class="btn btn-outline-primary px-3 py-2 text-sm choice-delete" data-choice-delete>Delete choice</button>
+            <button type="button" class="btn btn-outline-danger px-3 py-2 text-sm choice-delete" style="margin-top: 12px; width: 100%;" data-choice-delete>Delete choice</button>
         `;
-        // set selected values after options populated
+
         const targetSelect = row.querySelector('[data-choice-target]');
         if (targetVal) targetSelect.value = targetVal;
-        const requireKeySelect = row.querySelector('[data-require-key]');
-        if (requireKeyVal) requireKeySelect.value = requireKeyVal;
-        const effectKeySelect = row.querySelector('[data-effect-key]');
-        if (effectKeyVal) effectKeySelect.value = effectKeyVal;
+
+        const conditionsList = row.querySelector('.conditions-list');
+        const effectsList = row.querySelector('.effects-list');
+
+        if (choiceData && choiceData.conditions && typeof choiceData.conditions === 'object') {
+            for (const [k, v] of Object.entries(choiceData.conditions)) {
+                conditionsList.appendChild(createConditionRow(k, v));
+            }
+        } else if (choiceData && choiceData.requirement && choiceData.requirement.key) {
+            conditionsList.appendChild(createConditionRow(choiceData.requirement.key, choiceData.requirement.value));
+        } else {
+            conditionsList.appendChild(createConditionRow());
+        }
+
+        if (choiceData && choiceData.effects && typeof choiceData.effects === 'object') {
+            for (const [k, v] of Object.entries(choiceData.effects)) {
+                effectsList.appendChild(createEffectRow(k, v));
+            }
+        } else if (choiceData && choiceData.effect && choiceData.effect.key) {
+            effectsList.appendChild(createEffectRow(choiceData.effect.key, choiceData.effect.delta));
+        } else {
+            effectsList.appendChild(createEffectRow());
+        }
+
+        row.querySelector('[data-add-condition]').addEventListener('click', () => {
+            conditionsList.appendChild(createConditionRow());
+        });
+        row.querySelector('[data-add-effect]').addEventListener('click', () => {
+            effectsList.appendChild(createEffectRow());
+        });
         row.querySelector('[data-choice-delete]').addEventListener('click', () => {
             row.remove();
         });
@@ -142,7 +190,7 @@
             return;
         }
         sceneList.innerHTML = scenes.map((scene) => {
-            const flags = [scene.is_starting ? 'start' : '', scene.is_ending ? 'ending' : ''].filter(Boolean).join(', ');
+            const flags = [scene.is_starting ? 'Start' : '', scene.is_ending ? 'End' : ''].filter(Boolean).join(', ');
             return `
                 <div class="scene-item">
                     <h3>${scene.title || 'Untitled scene'}</h3>
@@ -244,28 +292,37 @@
         choiceRows.querySelectorAll('[data-choice-row]').forEach((row, index) => {
             const text = row.querySelector('[data-choice-text]').value.trim();
             const targetSceneId = row.querySelector('[data-choice-target]').value;
-            const requireKey = row.querySelector('[data-require-key]').value;
-            const requireValue = row.querySelector('[data-require-value]').value;
-            const effectKey = row.querySelector('[data-effect-key]').value;
-            const effectDelta = row.querySelector('[data-effect-delta]').value;
-            if (!text && !targetSceneId && !requireKey && !requireValue && !effectKey && !effectDelta) {
+
+            const conditions = {};
+            row.querySelectorAll('[data-condition-row]').forEach(condRow => {
+                const key = condRow.querySelector('[data-require-key]').value;
+                const val = condRow.querySelector('[data-require-value]').value;
+                if (key && val !== '') {
+                    conditions[key] = Number(val);
+                }
+            });
+
+            const effects = {};
+            row.querySelectorAll('[data-effect-row]').forEach(effRow => {
+                const key = effRow.querySelector('[data-effect-key]').value;
+                const val = effRow.querySelector('[data-effect-delta]').value;
+                if (key && val !== '') {
+                    effects[key] = Number(val);
+                }
+            });
+
+            if (!text && !targetSceneId && Object.keys(conditions).length === 0 && Object.keys(effects).length === 0) {
                 return;
             }
             if (!text) {
                 throw new Error(`Choice #${index + 1}: text required.`);
             }
-            // target scene optional — allow linking later
+
             const choice = {
                 text,
                 target_scene_id: targetSceneId ? Number.parseInt(targetSceneId, 10) : null,
-                requirement: {
-                    key: requireKey,
-                    value: requireValue,
-                },
-                effect: {
-                    key: effectKey,
-                    delta: effectDelta,
-                },
+                conditions,
+                effects,
             };
             parsed.push(choice);
         });
