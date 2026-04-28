@@ -19,7 +19,10 @@
             <div class="brand-mark">Stories</div>
             <div class="brand-subtitle">Choose a story. Start in one click.</div>
         </div>
-        <a class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" href="/">Back to home</a>
+        <div class="flex items-center gap-3">
+            <a class="btn btn-primary px-4 py-2 text-sm font-semibold" href="/story/create/">Create story</a>
+            <a class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" href="/">Back to home</a>
+        </div>
     </header>
 
     <main class="mx-auto w-full max-w-6xl px-4 pb-10">
@@ -38,7 +41,10 @@
                                 <p class="story-muted" data-story-description>No description yet.</p>
                             {% endif %}
                         </div>
-                        <a class="btn btn-primary px-6 py-3 text-base font-semibold" href="/story/{{ story.id }}/">Play</a>
+                        <div class="flex flex-wrap gap-2">
+                            <a class="btn btn-primary px-6 py-3 text-base font-semibold" href="/story/{{ story.id }}/">Play</a>
+                            <a class="btn btn-outline-primary px-6 py-3 text-base font-semibold" href="/story/{{ story.id }}/edit/">Edit</a>
+                        </div>
                     </article>
                 {% endfor %}
             {% else %}

@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Editor | Tadpole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}?v={{ timestamp }}">
+    <link rel="stylesheet" href="{% static 'styles/scene_editor_page.css' %}?v={{ timestamp }}">
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6" data-animate>
+        <div>
+            <div class="brand-mark">Scene Editor</div>
+            <div class="brand-subtitle" id="scene-editor-story-title"></div>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" id="scene-editor-back-link" href="#">Back to story setup</a>
+            <button type="button" class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" id="scene-editor-logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-4 pb-12">
+        <section class="editor-layout" data-animate>
+            <article class="editor-card">
+                <h2>Create scene</h2>
+                <div id="scene-editor-error" class="alert alert-danger d-none px-4 py-3 mt-3" role="alert"></div>
+                <div id="scene-editor-success" class="alert alert-info d-none px-4 py-3 mt-3" role="status"></div>
+
+                <form id="scene-create-form" class="editor-form">
+                    <label class="form-field">
+                        <span>Scene title *</span>
+                        <input id="scene-title" type="text" maxlength="200" required placeholder="Intro">
+                    </label>
+
+                    <label class="form-field">
+                        <span>Scene content</span>
+                        <textarea id="scene-content" rows="4" placeholder="Scene text/dialogue"></textarea>
+                    </label>
+
+                    <label class="form-field">
+                        <span>Background URL</span>
+                        <input id="scene-background-url" type="url" placeholder="https://...">
+                    </label>
+
+                    <label class="inline-check">
+                        <input id="scene-is-starting" type="checkbox">
+                        <span>Mark as starting scene</span>
+                    </label>
+
+                    <label class="inline-check">
+                        <input id="scene-is-ending" type="checkbox">
+                        <span>Mark as ending scene</span>
+                    </label>
+
+                    <section class="choice-section">
+                        <div class="choice-header">
+                            <h3>Choices</h3>
+                            <button id="choice-add-btn" class="btn btn-outline-primary px-3 py-2 text-sm" type="button">+ Add choice</button>
+                        </div>
+                        <p class="section-hint">Choice needs text and next scene. Requirement/effect optional.</p>
+                        <div id="choice-rows" class="choice-rows"></div>
+                    </section>
+
+                    <div class="editor-actions">
+                        <button id="scene-create-submit" class="btn btn-primary px-5 py-3 text-sm font-semibold" type="submit">Create scene</button>
+                        <span id="scene-editor-loading" class="loading-text d-none">Saving...</span>
+                    </div>
+                </form>
+            </article>
+
+            <article class="editor-card">
+                <h2>Existing scenes</h2>
+                <div id="scene-list" class="scene-list"></div>
+            </article>
+        </section>
+    </main>
+</div>
+
+{{ story_editor_data|json_script:"story-editor-data" }}
+<script src="{% static 'scripts/scene_editor_page.js' %}?v={{ timestamp }}" defer></script>
+</body>
+</html>
+

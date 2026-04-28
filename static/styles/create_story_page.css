@@ -1,0 +1,159 @@
+.creator-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card-strong);
+    box-shadow: var(--shadow-soft);
+}
+.creator-title {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 760;
+}
+.creator-subtitle {
+    margin: 0.8rem 0 0;
+    color: var(--text-muted);
+}
+.creator-form {
+    display: grid;
+    gap: 1rem;
+}
+.creator-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.75);
+    padding: 1rem;
+}
+.creator-section h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 680;
+}
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.section-hint {
+    margin: 0.5rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.field-grid {
+    margin-top: 0.75rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    color: var(--text-main);
+}
+.form-field span {
+    font-size: 0.9rem;
+    font-weight: 640;
+}
+.form-field small {
+    color: var(--text-muted);
+}
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text-main);
+    padding: 0.72rem 0.84rem;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--speed-fast) var(--ease-out), box-shadow var(--speed-fast) var(--ease-out);
+}
+.form-field input:focus,
+.form-field textarea:focus {
+    border-color: rgba(92, 109, 223, 0.65);
+    box-shadow: 0 0 0 3px rgba(92, 109, 223, 0.16);
+}
+.form-field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+.attribute-rows {
+    margin-top: 0.9rem;
+    display: grid;
+    gap: 0.75rem;
+}
+.attribute-row {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(0, 0.6fr) auto;
+    align-items: center;
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.94);
+}
+.attribute-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text-main);
+    padding: 0.72rem 0.84rem;
+    font-size: 0.95rem;
+    outline: none;
+}
+.attribute-input:focus {
+    border-color: rgba(92, 109, 223, 0.65);
+    box-shadow: 0 0 0 3px rgba(92, 109, 223, 0.16);
+}
+.attribute-number {
+    text-align: right;
+}
+.attribute-delete-btn {
+    white-space: nowrap;
+}
+
+.scene-editor-section .btn.is-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.scene-editor-section .btn.is-disabled:hover {
+    transform: none;
+}
+
+.creator-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+.loading-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+@media (min-width: 920px) {
+    .field-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .attribute-row {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+

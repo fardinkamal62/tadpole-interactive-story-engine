@@ -1,7 +1,15 @@
 from django.db import models
+from django.conf import settings
 
 
 class Story(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        related_name="created_stories",
+        on_delete=models.SET_NULL,
+    )
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     background_music_url = models.TextField(blank=True)
@@ -42,7 +50,9 @@ class Choice(models.Model):
     target_scene = models.ForeignKey(
         Scene,
         related_name="incoming_choices",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     conditions = models.JSONField(default=dict, blank=True)
     effects = models.JSONField(default=dict, blank=True)

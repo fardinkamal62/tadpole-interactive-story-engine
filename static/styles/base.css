@@ -68,6 +68,18 @@ a {
     box-shadow: 0 10px 22px rgba(125, 141, 255, 0.38);
 }
 
+.btn-danger {
+    border: 0;
+    color: #ffffff;
+    background: linear-gradient(135deg, #e04f72, #cc3658);
+}
+
+.btn-danger:hover,
+.btn-danger:focus-visible {
+    background: linear-gradient(135deg, #e65a7d, #d94a68);
+    box-shadow: 0 2px 24px rgba(204, 54, 88, 0.45);
+}
+
 .btn-outline-primary,
 .btn-outline-dark,
 .btn-outline-secondary {

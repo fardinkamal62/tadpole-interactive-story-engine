@@ -9,78 +9,80 @@ from .story_logic import StoryState, Scene, Choice
 from apps.story.models import Story as StoryModel
 
 # A simple sample story
+SCENES_DATA: dict[int, Scene] = {
+    0: Scene(
+        scene_id=0,
+        background="/static/house_entrance.jpg",
+        choices=[
+            Choice(1, "Enter the house", 1,
+                  effects={}),
+            Choice(2, "Don't enter, go to the barn", 3,
+                  effects={})
+        ]
+    ),
+    1: Scene(
+        scene_id=1,
+        background="/static/inside_house.jpg",
+        choices=[
+            Choice(3, "Trust the friend", 2,
+                  effects={"trust": 10, "security": 10}),
+            Choice(4, "Don't trust them, go outside", 3,
+                  effects={})
+        ]
+    ),
+    2: Scene(
+        scene_id=2,
+        background="/static/with_friend.jpg",
+        choices=[
+            Choice(5, "Gift him my watch", 5,
+                  effects={"trust": 20}),
+            Choice(6, "Don't gift the watch", 5,
+                  effects={})
+        ]
+    ),
+    3: Scene(
+        scene_id=3,
+        background="/static/barn.jpg",
+        choices=[
+            Choice(7, "Sleep in the barn", 6,
+                  effects={"trust": -5, "security": -10})
+        ]
+    ),
+    4: Scene(
+        scene_id=4,
+        background="/static/outside.jpg",
+        choices=[]
+    ),
+    5: Scene(
+        scene_id=5,
+        background="/static/friend_room.jpg",
+        choices=[
+            Choice(8, "Continue...", 7,
+                  conditions={"trust": 30, "security": 10}),
+            Choice(9, "Continue...", 8,
+                  conditions={})
+        ]
+    ),
+    6: Scene(
+        scene_id=6,
+        background="/static/barn_ending.jpg",
+        choices=[]
+    ),
+    7: Scene(
+        scene_id=7,
+        background="/static/separate_bed.jpg",
+        choices=[]
+    ),
+    8: Scene(
+        scene_id=8,
+        background="/static/couch.jpg",
+        choices=[]
+    )
+}
+
 STORY_DATA = {
     "attributes": ["trust", "security"],
-    "scenes": {
-        0: Scene(
-            scene_id=0,
-            background="/static/house_entrance.jpg",
-            choices=[
-                Choice(1, "Enter the house", 1,
-                      effects={}),
-                Choice(2, "Don't enter, go to the barn", 3,
-                      effects={})
-            ]
-        ),
-        1: Scene(
-            scene_id=1,
-            background="/static/inside_house.jpg",
-            choices=[
-                Choice(3, "Trust the friend", 2,
-                      effects={"trust": 10, "security": 10}),
-                Choice(4, "Don't trust them, go outside", 3,
-                      effects={})
-            ]
-        ),
-        2: Scene(
-            scene_id=2,
-            background="/static/with_friend.jpg",
-            choices=[
-                Choice(5, "Gift him my watch", 5,
-                      effects={"trust": 20}),
-                Choice(6, "Don't gift the watch", 5,
-                      effects={})
-            ]
-        ),
-        3: Scene(
-            scene_id=3,
-            background="/static/barn.jpg",
-            choices=[
-                Choice(7, "Sleep in the barn", 6,
-                      effects={"trust": -5, "security": -10})
-            ]
-        ),
-        4: Scene(
-            scene_id=4,
-            background="/static/outside.jpg",
-            choices=[]
-        ),
-        5: Scene(
-            scene_id=5,
-            background="/static/friend_room.jpg",
-            choices=[
-                Choice(8, "Continue...", 7,
-                      conditions={"trust": 30, "security": 10}),
-                Choice(9, "Continue...", 8,
-                      conditions={})
-            ]
-        ),
-        6: Scene(
-            scene_id=6,
-            background="/static/barn_ending.jpg",
-            choices=[]
-        ),
-        7: Scene(
-            scene_id=7,
-            background="/static/separate_bed.jpg",
-            choices=[]
-        ),
-        8: Scene(
-            scene_id=8,
-            background="/static/couch.jpg",
-            choices=[]
-        )
-    }
+    "scenes": SCENES_DATA
 }
 
 @ensure_csrf_cookie
@@ -89,7 +91,7 @@ def start_story(request):
     initial_state = StoryState(story_id=0, current_scene_id=0)
     request.session['game_state'] = initial_state.__dict__
 
-    current_scene = STORY_DATA["scenes"][initial_state.current_scene_id]
+    current_scene = SCENES_DATA[int(initial_state.current_scene_id)]
     return build_scene_response(request, current_scene, initial_state.variables)
 
 @ensure_csrf_cookie
@@ -100,9 +102,10 @@ def process_choice(request):
 
     # Get current state from session
     state_dict = request.session.get('game_state')
-    if not state_dict:
+    if not isinstance(state_dict, dict):
         return JsonResponse({"error": "No active game session"}, status=400)
 
+    assert isinstance(state_dict, dict)
     state = StoryState(**state_dict)
 
     # Get choice data from request
@@ -110,11 +113,14 @@ def process_choice(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
-    choice_id = data.get('choice_id')
-    current_scene_id = data.get('current_scene_id')
+    try:
+        choice_id = int(data.get('choice_id'))
+        current_scene_id = int(data.get('current_scene_id'))
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "choice_id and current_scene_id must be integers"}, status=400)
 
     # Validate choice exists in current scene
-    current_scene = STORY_DATA["scenes"].get(current_scene_id)
+    current_scene = SCENES_DATA.get(current_scene_id)
     if not current_scene:
         return JsonResponse({"error": "Invalid scene"}, status=400)
 
@@ -133,7 +139,10 @@ def process_choice(request):
     request.session['game_state'] = state.__dict__
 
     # Check if story ends
-    next_scene = STORY_DATA["scenes"].get(state.current_scene_id)
+    next_scene = SCENES_DATA.get(state.current_scene_id)
+    if not next_scene:
+        return JsonResponse({"error": "Invalid next scene"}, status=400)
+    assert next_scene is not None
     if len(next_scene.choices) == 0:
         return JsonResponse({
             "ending": True,
@@ -145,7 +154,7 @@ def process_choice(request):
     return build_scene_response(request, next_scene, state.variables)
 
 # Helper functions
-def build_scene_response(request, scene, variables):
+def build_scene_response(request, scene: Scene, variables: dict[str, int]):
     """Build a JSON response for a scene with filtered choices"""
     available_choices = get_available_choices(scene, variables)
 
@@ -159,7 +168,7 @@ def build_scene_response(request, scene, variables):
         "variables": variables
     })
 
-def get_available_choices(scene, variables):
+def get_available_choices(scene: Scene, variables: dict[str, int]):
     """Get filtered list of available choices based on conditions"""
     available_choices = []
     for choice in scene.choices:
@@ -219,6 +228,65 @@ def story_list_page(request):
         "stories": stories,
     }
     response = render(request, "story_list.html", context)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
+
+
+def create_story_page(request):
+    """Render the creator page for starting story creation."""
+    context = {
+        "timestamp": int(time.time()),
+        "page_mode": "create",
+        "story_form_data": None,
+    }
+    response = render(request, "create_story_page.html", context)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
+
+
+def story_edit_page(request, story_id):
+    """Render the creator page in edit mode for an existing story."""
+    story = get_object_or_404(StoryModel.objects.prefetch_related("attributes"), pk=story_id)
+    context = {
+        "timestamp": int(time.time()),
+        "page_mode": "edit",
+        "story_form_data": {
+            "story_id": story.id,
+            "title": story.title,
+            "description": story.description,
+            "background_music_url": story.background_music_url,
+            "attributes": [
+                {
+                    "key": attribute.key,
+                    "label": attribute.label,
+                    "initial_value": attribute.initial_value,
+                }
+                for attribute in story.attributes.all()
+            ],
+        },
+    }
+    response = render(request, "create_story_page.html", context)
+    response["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    return response
+
+
+def story_scene_editor_page(request, story_id):
+    """Render scene editor page for a story."""
+    story = get_object_or_404(StoryModel, pk=story_id)
+    context = {
+        "timestamp": int(time.time()),
+        "story_editor_data": {
+            "story_id": story.id,
+            "title": story.title,
+        },
+    }
+    response = render(request, "scene_editor_page.html", context)
     response["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response["Pragma"] = "no-cache"
     response["Expires"] = "0"

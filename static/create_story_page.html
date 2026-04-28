@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Story | Tadpole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}?v={{ timestamp }}">
+    <link rel="stylesheet" href="{% static 'styles/create_story_page.css' %}?v={{ timestamp }}">
+</head>
+<body>
+<div class="page-shell">
+    <header class="topbar mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6" data-animate>
+        <div>
+            <div class="brand-mark">Creator</div>
+            <div class="brand-subtitle">Step 1: Story metadata</div>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" href="/story/">Back to stories</a>
+            <button type="button" class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" id="creator-logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-4 pb-12">
+        <section class="creator-card p-6 md:p-8" data-animate>
+            <h1 class="creator-title">{% if page_mode == 'edit' %}Edit story{% else %}Create new story{% endif %}</h1>
+
+            <div id="create-story-error" class="alert alert-danger d-none px-4 py-3 mt-4" role="alert"></div>
+            <div id="create-story-success" class="alert alert-info d-none px-4 py-3 mt-4" role="status"></div>
+
+            {% if story_form_data %}
+                {{ story_form_data|json_script:"story-form-data" }}
+            {% endif %}
+
+            <form id="create-story-form" class="creator-form mt-6" enctype="multipart/form-data">
+                <section class="creator-section">
+                    <h2>Metadata</h2>
+                    <div class="field-grid">
+                        <label class="form-field">
+                            <span>Title *</span>
+                            <input id="story-title" name="title" type="text" maxlength="200" required placeholder="Story title">
+                        </label>
+                        <label class="form-field field-file">
+                            <span>Background audio (optional)</span>
+                            <input id="background-audio" name="background_audio" type="file" accept="audio/*">
+                            <small>Accepted: any audio file under 5 MB.</small>
+                        </label>
+                    </div>
+                    <label class="form-field mt-4">
+                        <span>Description</span>
+                        <textarea id="story-description" name="description" rows="4" placeholder="Short story pitch"></textarea>
+                    </label>
+                </section>
+
+                <section class="creator-section">
+                    <div class="section-header">
+                        <h2>Attributes</h2>
+                        <button id="attribute-add-btn" class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" type="button">+ Add attribute</button>
+                    </div>
+                    <p class="section-hint">Each row needs key, label, default value.</p>
+                    <div id="attribute-rows" class="attribute-rows"></div>
+                </section>
+
+                <section class="creator-section scene-editor-section">
+                    <h2>Scene Editor</h2>
+                    <p class="section-hint">Create scenes, add choices, set requirements and attribute effects.</p>
+                    <a id="scene-editor-link" class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" href="#">Go to Scene Editor</a>
+                </section>
+
+                <div class="creator-actions">
+                    <button id="create-story-submit" class="btn btn-primary px-6 py-3 text-base font-semibold" type="submit">{% if page_mode == 'edit' %}Save changes{% else %}Save and continue{% endif %}</button>
+                    <span id="create-story-loading" class="loading-text d-none">Saving...</span>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+<script src="{% static 'scripts/create_story_page.js' %}?v={{ timestamp }}" defer></script>
+</body>
+</html>
+

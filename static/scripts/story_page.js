@@ -265,11 +265,17 @@ const renderEnding = (payload) => {
     storyStage.classList.add("scene-swap");
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
+
+    const scene = payload.scene || {};
+    if (scene.title) storyTitle.textContent = scene.title;
+    if (scene.content) storyContent.textContent = scene.content;
+    setStageBackground(scene.background_image_url);
+    if (scene.id) sceneIdLabel.textContent = scene.id;
+
     storyEnding.hidden = false;
     storyChoices.innerHTML = "";
     storyEndingText.textContent = payload.message || "The story concludes here.";
     renderAttributes(payload.final_attributes || []);
-    sceneIdLabel.textContent = "-";
 };
 
 const startStory = async () => {

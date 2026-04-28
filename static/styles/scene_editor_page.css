@@ -1,0 +1,169 @@
+.editor-layout {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+.editor-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card-strong);
+    box-shadow: var(--shadow-soft);
+    padding: 1rem;
+}
+.editor-card h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.editor-form {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.9rem;
+}
+.form-field {
+    display: grid;
+    gap: 0.4rem;
+}
+.form-field span {
+    font-size: 0.88rem;
+    font-weight: 640;
+}
+.form-field input,
+.form-field textarea,
+.choice-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text-main);
+    padding: 0.68rem 0.78rem;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.btn {
+    border-radius: 12px;
+    padding: 0.68rem 0.78rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.btn-outline-danger {
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: var(--danger);
+    color: white;
+}
+.form-field textarea {
+    resize: vertical;
+}
+.inline-check {
+    display: inline-flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+.choice-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.78);
+    padding: 0.8rem;
+}
+.choice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+.choice-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 680;
+}
+.section-hint {
+    margin: 0.4rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+}
+.choice-rows {
+    margin-top: 0.8rem;
+    display: grid;
+    gap: 0.75rem;
+}
+.choice-row {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.8rem;
+    display: grid;
+    gap: 0.55rem;
+}
+.choice-grid {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.choice-grid-4 {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.choice-delete {
+    justify-self: flex-end;
+    margin-top: 0.2rem;
+}
+.scene-list {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.7rem;
+}
+.scene-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.scene-item h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 680;
+}
+.scene-item p {
+    margin: 0.45rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    flex-grow: 1;
+}
+.editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding-top: 0.5rem;
+}
+.loading-text {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+@media (min-width: 1080px) {
+    .editor-layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    }
+}
+@media (max-width: 768px) {
+    .choice-grid,
+    .choice-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
