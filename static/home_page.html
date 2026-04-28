@@ -22,7 +22,7 @@
             <div class="brand-subtitle">Interactive Story Engine</div>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-            <a class="topbar-link" href="{% url 'story_list_page' %}" id="home-stories-link">Stories</a>
+            <a class="topbar-link" href="{% url 'story_list_page' %}?mine=true" id="home-stories-link">My stories</a>
             <a class="btn btn-outline-primary px-4 py-2 text-sm font-semibold" href="{% url 'login_page' %}" id="home-login-btn">Log in</a>
             <div class="profile-menu d-none" id="home-profile-menu">
                 <button type="button" class="user-chip" id="home-user-chip" aria-label="Signed-in user menu">
@@ -30,7 +30,7 @@
                     <span class="user-name" id="home-user-name"></span>
                 </button>
                 <div class="profile-dropdown" aria-label="Profile menu">
-                    <a class="profile-dropdown-item" href="{% url 'story_list_page' %}" id="home-profile-dashboard-link">Stories</a>
+                    <a class="profile-dropdown-item" href="{% url 'story_list_page' %}?mine=true" id="home-profile-dashboard-link">My stories</a>
                     <button type="button" class="profile-dropdown-item" id="home-profile-logout-btn">Logout</button>
                 </div>
             </div>

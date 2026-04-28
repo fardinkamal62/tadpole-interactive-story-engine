@@ -16,7 +16,7 @@
 <div class="page-shell">
     <header class="topbar mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6" data-animate>
         <div>
-            <div class="brand-mark">Stories</div>
+            <div class="brand-mark">{% if is_mine %}My Stories{% else %}Stories{% endif %}</div>
             <div class="brand-subtitle">Choose a story. Start in one click.</div>
         </div>
         <div class="flex items-center gap-3">
@@ -43,7 +43,9 @@
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <a class="btn btn-primary px-6 py-3 text-base font-semibold" href="/story/{{ story.id }}/">Play</a>
+                            {% if story.owner == request.user %}
                             <a class="btn btn-outline-primary px-6 py-3 text-base font-semibold" href="/story/{{ story.id }}/edit/">Edit</a>
+                            {% endif %}
                         </div>
                     </article>
                 {% endfor %}
@@ -59,4 +61,3 @@
 <script src="{% static 'scripts/story_list.js' %}?v={{ timestamp }}" defer></script>
 </body>
 </html>
-

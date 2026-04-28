@@ -222,10 +222,15 @@ def login_page(request):
 
 def story_list_page(request):
     """Render the list of available stories."""
-    stories = StoryModel.objects.all().order_by("title")
+    is_mine = request.GET.get('mine') == 'true'
+    if is_mine and request.user.is_authenticated:
+        stories = StoryModel.objects.filter(owner=request.user).order_by("title")
+    else:
+        stories = StoryModel.objects.all().order_by("title")
     context = {
         "timestamp": int(time.time()),
         "stories": stories,
+        "is_mine": is_mine,
     }
     response = render(request, "story_list.html", context)
     response["Cache-Control"] = "no-cache, no-store, must-revalidate"
