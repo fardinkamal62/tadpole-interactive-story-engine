@@ -205,18 +205,30 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background: linear-gradient(200deg, rgba(255, 255, 255, 0.06) 0%, rgba(246, 249, 255, 0.88) 74%);
+    background:
+        radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%),
+        linear-gradient(45deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0) 100%);
+}
+
+.story-breadcrumb {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
 }
 
 .story-title {
     margin-bottom: 0.75rem;
     font-size: clamp(1.6rem, 3vw, 2.2rem);
+    color: #ffffff;
 }
 
 .story-content {
     margin: 0;
     font-size: 1.02rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
 }
 
@@ -299,7 +311,7 @@
 .story-ending-text {
     margin: 0;
     font-size: 1.02rem;
-    color: var(--text-main);
+    color: #ffffff;
 }
 
 .story-error {

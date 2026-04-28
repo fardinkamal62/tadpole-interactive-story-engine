@@ -1,3 +1,4 @@
+const storyBreadcrumb = document.getElementById("story-breadcrumb");
 const storyStage = document.getElementById("story-stage");
 const storyTitle = document.getElementById("story-title");
 const storyContent = document.getElementById("story-content");
@@ -251,7 +252,15 @@ const renderScene = (payload) => {
     storyStage.classList.add("scene-swap");
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
-    storyTitle.textContent = scene.title || "Scene";
+
+    const storyTitleVal = (payload.story || activeStoryMeta)?.title || "Story";
+    const sceneTitleVal = scene.title || "Scene";
+    if (storyBreadcrumb) {
+        storyBreadcrumb.textContent = `${storyTitleVal} • ${sceneTitleVal}`;
+        storyBreadcrumb.hidden = false;
+    }
+
+    storyTitle.textContent = sceneTitleVal;
     storyContent.textContent = scene.content || "";
     storyEnding.hidden = true;
     renderChoices(scene.choices || []);
@@ -269,6 +278,14 @@ const renderEnding = (payload) => {
     setStoryAudio(payload.story || activeStoryMeta);
 
     const scene = payload.scene || {};
+
+    const storyTitleVal = (payload.story || activeStoryMeta)?.title || "Story";
+    const sceneTitleVal = scene.title || "Ending";
+    if (storyBreadcrumb) {
+        storyBreadcrumb.textContent = `${storyTitleVal} • ${sceneTitleVal}`;
+        storyBreadcrumb.hidden = false;
+    }
+
     if (scene.title) storyTitle.textContent = scene.title;
     if (scene.content) storyContent.textContent = scene.content;
     setStageBackground(scene.background_image_url);
