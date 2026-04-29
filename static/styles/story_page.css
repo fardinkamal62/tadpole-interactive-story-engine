@@ -46,6 +46,11 @@
     background-size: cover;
     background-position: center;
     box-shadow: var(--shadow-strong);
+    transition: opacity 220ms ease;
+}
+
+.story-stage.is-fading {
+    opacity: 0;
 }
 
 .story-stage.is-loading {
@@ -199,15 +204,40 @@
 }
 
 .story-overlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
     padding: 6rem 1.2rem 1.2rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    background: transparent;
+    z-index: 1;
+}
+
+.story-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
     background:
-        radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%),
-        linear-gradient(45deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0) 100%);
+        radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 100%),
+        linear-gradient(45deg, rgba(12, 20, 36, 0.98) 0%, rgba(12, 20, 36, 0.75) 55%, rgba(12, 20, 36, 0) 100%);
+    opacity: 1;
+    transition: opacity 1000ms ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.story-overlay > * {
+    position: relative;
+    z-index: 1;
+}
+
+.story-overlay.is-scene-only {
+    background: transparent;
+}
+
+.story-overlay.is-scene-only::before {
+    opacity: 0;
 }
 
 .story-breadcrumb {
@@ -217,12 +247,16 @@
     letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
     font-weight: 600;
+    transition: opacity 400ms ease;
+    opacity: 0;
 }
 
 .story-title {
     margin-bottom: 0.75rem;
     font-size: clamp(1.6rem, 3vw, 2.2rem);
     color: #ffffff;
+    transition: opacity 400ms ease;
+    opacity: 0;
 }
 
 .story-content {
@@ -230,41 +264,19 @@
     font-size: 1.02rem;
     color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
+    transition: opacity 400ms ease;
+    opacity: 0;
 }
 
-.story-loader {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin-top: 1rem;
-    padding: 0.55rem 0.78rem;
-    border-radius: 999px;
-    border: 1px solid rgba(92, 109, 223, 0.28);
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--text-main);
-    font-size: 0.9rem;
-}
-
-.loader-spinner {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 2px solid rgba(114, 130, 234, 0.26);
-    border-top-color: var(--accent-strong);
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
 
 .story-choices {
     display: grid;
     gap: 0.7rem;
     margin-top: 1rem;
     width: min(850px, 100%);
+    transition: opacity 300ms ease;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .story-choice {
@@ -373,21 +385,6 @@
     color: var(--text-muted);
 }
 
-.scene-swap {
-    animation: scene-swap 240ms ease;
-}
-
-@keyframes scene-swap {
-    from {
-        opacity: 0.78;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
 @media (max-width: 992px) {
     .story-stage {

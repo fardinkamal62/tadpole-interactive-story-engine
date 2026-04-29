@@ -81,14 +81,10 @@
             </div>
         </div>
 
-        <div class="story-overlay">
+        <div class="story-overlay is-scene-only" id="story-overlay">
             <div class="story-breadcrumb" id="story-breadcrumb" hidden></div>
-            <h1 class="story-title" id="story-title">Loading story...</h1>
-            <p class="story-content" id="story-content">Please wait while we fetch the first scene.</p>
-            <div class="story-loader" id="story-loader" hidden>
-                <span class="loader-spinner" aria-hidden="true"></span>
-                <span>Loading next scene...</span>
-            </div>
+            <h1 class="story-title" id="story-title"></h1>
+            <p class="story-content" id="story-content"></p>
             <div class="story-choices" id="story-choices"></div>
             <div class="story-ending" id="story-ending" hidden>
                 <p class="story-ending-text" id="story-ending-text"></p>
@@ -102,4 +98,3 @@
 <script src="{% static 'scripts/story_page.js' %}?v={{ timestamp }}" defer></script>
 </body>
 </html>
-

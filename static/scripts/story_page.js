@@ -12,7 +12,6 @@ const storyIdLabel = document.getElementById("story-id");
 const sceneIdLabel = document.getElementById("scene-id");
 const storyName = document.getElementById("story-name");
 const storyDescription = document.getElementById("story-description");
-const storyLoader = document.getElementById("story-loader");
 const storyAudio = document.getElementById("story-audio");
 const storyAudioControl = document.getElementById("story-audio-control");
 const storyAudioControls = document.getElementById("story-audio-controls");
@@ -23,11 +22,15 @@ const storyAudioStatus = document.getElementById("story-audio-status");
 const storyFullscreenToggle = document.getElementById("story-fullscreen-toggle");
 const storyInfoControl = document.getElementById("story-info-control");
 const storyInfoToggle = document.getElementById("story-info-toggle");
+const storyOverlay = document.getElementById("story-overlay");
 
 let csrfToken = "";
 let activeStoryId = null;
 let activeStoryMeta = null;
 let audioReady = false;
+let textRevealTimer = null;
+let choicesRevealTimer = null;
+let sceneFadeTimer = null;
 
 const isFullscreenSupported = !!(document.fullscreenEnabled && storyStage?.requestFullscreen);
 
@@ -83,6 +86,21 @@ const animateInView = () => {
     animatedNodes.forEach((node) => observer.observe(node));
 };
 
+const clearSceneTimers = () => {
+    if (textRevealTimer) {
+        clearTimeout(textRevealTimer);
+        textRevealTimer = null;
+    }
+    if (choicesRevealTimer) {
+        clearTimeout(choicesRevealTimer);
+        choicesRevealTimer = null;
+    }
+    if (sceneFadeTimer) {
+        clearTimeout(sceneFadeTimer);
+        sceneFadeTimer = null;
+    }
+};
+
 const getStoryIdFromQuery = () => {
     const pathMatch = window.location.pathname.match(/\/story\/(\d+)\/?/);
     if (pathMatch) {
@@ -119,7 +137,6 @@ const setStoryMeta = (story) => {
 };
 
 const setLoading = (isLoading) => {
-    storyLoader.hidden = !isLoading;
     storyStage.classList.toggle("is-loading", isLoading);
     storyChoices.querySelectorAll("button").forEach((button) => {
         const isAvailable = button.dataset.available === "1";
@@ -239,7 +256,7 @@ const renderChoices = (choices) => {
         button.textContent = choice.text;
         button.dataset.available = choice.available ? "1" : "0";
         button.disabled = !choice.available;
-        button.style.animationDelay = `${Math.min(storyChoices.children.length * 60, 220)}ms`;
+        button.style.animationDelay = `${Math.min(storyChoices.children.length * 100, 400)}ms`;
         button.addEventListener("click", () => handleChoice(choice.id));
         storyChoices.appendChild(button);
     });
@@ -247,41 +264,77 @@ const renderChoices = (choices) => {
 
 const renderScene = (payload) => {
     const scene = payload.scene;
-    storyStage.classList.remove("scene-swap");
-    void storyStage.offsetWidth;
-    storyStage.classList.add("scene-swap");
+    clearSceneTimers();
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
 
     const storyTitleVal = (payload.story || activeStoryMeta)?.title || "Story";
     const sceneTitleVal = scene.title || "Scene";
-    if (storyBreadcrumb) {
-        storyBreadcrumb.textContent = `${storyTitleVal} • ${sceneTitleVal}`;
-        storyBreadcrumb.hidden = false;
-    }
 
-    storyTitle.textContent = sceneTitleVal;
-    storyContent.textContent = scene.content || "";
-    storyEnding.hidden = true;
-    renderChoices(scene.choices || []);
-    renderAttributes(payload.attributes || []);
-    setStageBackground(scene.background_image_url);
+    if (storyOverlay) {
+        storyOverlay.classList.add("is-scene-only");
+    }
+    storyTitle.textContent = "";
+    storyContent.textContent = "";
+    storyTitle.style.opacity = "0";
+    storyContent.style.opacity = "0";
+    if (storyBreadcrumb) {
+        storyBreadcrumb.textContent = "";
+        storyBreadcrumb.style.opacity = "0";
+    }
+    storyChoices.innerHTML = "";
+    storyChoices.style.opacity = "0";
+    storyChoices.style.pointerEvents = "none";
+    storyStage.classList.add("is-fading");
+    sceneFadeTimer = setTimeout(() => {
+        setStageBackground(scene.background_image_url);
+        storyStage.classList.remove("is-fading");
+    }, 180);
     storyIdLabel.textContent = activeStoryId || "-";
     sceneIdLabel.textContent = scene.id || "-";
+    storyEnding.hidden = true;
 
     (scene.choices || []).forEach(choice => {
         if (choice.target_background_image_url) {
             new Image().src = choice.target_background_image_url;
         }
     });
+
+    renderAttributes(payload.attributes || []);
+
+    requestAnimationFrame(() => {
+        textRevealTimer = setTimeout(() => {
+            if (storyOverlay) {
+                storyOverlay.classList.remove("is-scene-only");
+            }
+            if (storyBreadcrumb) {
+                storyBreadcrumb.textContent = `${storyTitleVal} • ${sceneTitleVal}`;
+                storyBreadcrumb.hidden = false;
+                storyBreadcrumb.style.opacity = "1";
+            }
+
+            storyTitle.textContent = sceneTitleVal;
+            storyTitle.style.opacity = "1";
+
+            storyContent.textContent = scene.content || "";
+            storyContent.style.opacity = "1";
+        }, 1500);
+
+        choicesRevealTimer = setTimeout(() => {
+            renderChoices(scene.choices || []);
+            storyChoices.style.opacity = "1";
+            storyChoices.style.pointerEvents = "auto";
+        }, 2500);
+    });
 };
 
 const renderEnding = (payload) => {
-    storyStage.classList.remove("scene-swap");
-    void storyStage.offsetWidth;
-    storyStage.classList.add("scene-swap");
     setStoryMeta(payload.story || activeStoryMeta);
     setStoryAudio(payload.story || activeStoryMeta);
+    clearSceneTimers();
+    if (storyOverlay) {
+        storyOverlay.classList.remove("is-scene-only");
+    }
 
     const scene = payload.scene || {};
 
@@ -290,11 +343,18 @@ const renderEnding = (payload) => {
     if (storyBreadcrumb) {
         storyBreadcrumb.textContent = `${storyTitleVal} • ${sceneTitleVal}`;
         storyBreadcrumb.hidden = false;
+        storyBreadcrumb.style.opacity = "1";
     }
 
     if (scene.title) storyTitle.textContent = scene.title;
     if (scene.content) storyContent.textContent = scene.content;
-    setStageBackground(scene.background_image_url);
+    storyTitle.style.opacity = "1";
+    storyContent.style.opacity = "1";
+    storyStage.classList.add("is-fading");
+    sceneFadeTimer = setTimeout(() => {
+        setStageBackground(scene.background_image_url);
+        storyStage.classList.remove("is-fading");
+    }, 180);
     if (scene.id) sceneIdLabel.textContent = scene.id;
 
     storyEnding.hidden = false;
