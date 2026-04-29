@@ -2,7 +2,7 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login, logout
 
 from .serializers import (
     UserRegistrationSerializer, UserLoginSerializer, UserSerializer,
@@ -46,6 +46,8 @@ class LoginView(APIView):
             # Use AuthUtils for token generation
             token = AuthUtils.generate_user_token(user)
 
+            login(request, user)
+
             return Response({
                 'token': token.key,
                 'user': UserSerializer(user).data,
@@ -65,6 +67,7 @@ class LogoutView(APIView):
         try:
             # Use AuthUtils for token revocation
             if AuthUtils.revoke_user_token(request.user):
+                logout(request)
                 return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'No active token found'}, status=status.HTTP_400_BAD_REQUEST)
