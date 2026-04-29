@@ -257,7 +257,7 @@ def _has_conditional_flow(choices):
 
 def _get_available_choices(scene, attributes):
     choices_payload = []
-    choices = list(scene.choices.all())
+    choices = list(scene.choices.select_related("target_scene").all())
     for choice in choices:
         if choice.target_scene_id is None:
             continue
@@ -266,6 +266,7 @@ def _get_available_choices(scene, attributes):
                 "id": choice.id,
                 "text": choice.text,
                 "available": _check_conditions(choice.conditions, attributes),
+                "target_background_image_url": choice.target_scene.background_image_url if choice.target_scene else None,
             }
         )
 

@@ -268,6 +268,12 @@ const renderScene = (payload) => {
     setStageBackground(scene.background_image_url);
     storyIdLabel.textContent = activeStoryId || "-";
     sceneIdLabel.textContent = scene.id || "-";
+
+    (scene.choices || []).forEach(choice => {
+        if (choice.target_background_image_url) {
+            new Image().src = choice.target_background_image_url;
+        }
+    });
 };
 
 const renderEnding = (payload) => {
